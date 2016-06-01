@@ -1,5 +1,6 @@
 @echo off
-git add "." --all
+set cmd=git add "." --all
+%cmd%
 IF %ERRORLEVEL% NEQ 0 (
     pause
     exit
