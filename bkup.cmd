@@ -1,4 +1,4 @@
-@echo off
+
 set cmd=git add "." --all
 %cmd%
 IF %ERRORLEVEL% NEQ 0 (
