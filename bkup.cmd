@@ -1,3 +1,4 @@
+@echo off
 git add "." --all
 IF %ERRORLEVEL% NEQ 0 (
     pause
