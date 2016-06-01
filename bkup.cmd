@@ -1,9 +1,21 @@
 git add "." --all
+IF %ERRORLEVEL% NEQ 0 (
+    pause
+    exit
+)
 git commit -m "auto backup"
+IF %ERRORLEVEL% NEQ 0 (
+    pause
+    exit
+)
 git pull origin master
 IF %ERRORLEVEL% NEQ 0 (
     pause
     exit
 )
+
 git push origin master
-pause
+IF %ERRORLEVEL% NEQ 0 (
+    pause
+    exit
+)
