@@ -1,5 +1,6 @@
 @echo off
 set add=git add "." --all
+set diff=git diff-index --quiet HEAD
 set commit=git commit -m "auto backup"
 set pull=git pull origin master
 set push=git push origin master
@@ -7,9 +8,9 @@ set push=git push origin master
 %add%
 @echo off
 CALL :check_err
-
+ 
 @echo on
-%commit%
+%diff% || %commit%
 @echo off
 CALL :check_err
 
@@ -24,8 +25,7 @@ CALL :check_err
 CALL :check_err
 
 exit
-
-
+pause
 
 :check_err
 IF %ERRORLEVEL% NEQ 0 (
