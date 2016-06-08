@@ -24,7 +24,6 @@ CALL :check_err
 @echo off
 CALL :check_err
 
-pause
 exit
 
 :check_err
