@@ -25,7 +25,6 @@ CALL :check_err
 CALL :check_err
 
 exit
-pause
 
 :check_err
 IF %ERRORLEVEL% NEQ 0 (
