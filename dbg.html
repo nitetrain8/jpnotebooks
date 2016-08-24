@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/> 
+<title>PBS Biotech Issuetracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="Planio" />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="manifest" href="/manifest.json">
+<link rel=dns-prefetch href="//plan.io">
+<link rel=dns-prefetch href="//assets.plan.io">
+<link rel=dns-prefetch href="//oauth.plan.io">
+<link rel=dns-prefetch href="//external.planio.media">
+<link rel=dns-prefetch href="//secure.gravatar.com">
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="SxmiokDswQMr0eElrMJpP1c44LVGZR909kBhAWyHZrA=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico' />
+<link href="/assets/jquery/jquery-ui-1.11.0-66eea7a16dbf82f57c7544712badfda4.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/assets/planio_flat/stylesheets/application-6124a9f9f959e0f479d94e3df66f87ed.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/assets/responsive-7cc44bba2e45c77338a6349c4d4adf8b.css" media="all" rel="stylesheet" type="text/css" />
+<!--[if lte IE 9]>
+<link href="/assets/planio_flat/stylesheets/application_split2-b087bb058bde035770b5f38e5f61cd39.css" media="all" rel="stylesheet" type="text/css" />
+<![endif]-->
+
+<script src="/assets/jquery-1.11.1-ui-1.11.0-ujs-3.1.4-9cf020f1259939ef8810024bbf83f8cd.js" type="text/javascript"></script>
+<script src="/assets/application-89e1effd60662832c2f8e92ed2625a17.js" type="text/javascript"></script>
+<script src="/assets/responsive-384475af445273a5f8d42d51f4ea5d8d.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+<script src="/assets/planio_flat/javascripts/theme-853604122c09ae17fbb033d17874c648.js" type="text/javascript"></script>
+<script src="/assets/all_plugins-e37ab8f715a2f8d8c57673c08c71bc94.js" type="text/javascript"></script>
+<link href="/plugin_assets/redmine_chat/stylesheets/redmine_chat.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/plugin_assets/redmine_chat/stylesheets/jquery.ui.chatbox.css" media="all" rel="stylesheet" type="text/css" />
+
+
+ 
+<link href="/plugin_assets/redmine_cordova_app/stylesheets/cordova_app.css" media="screen" rel="stylesheet" type="text/css" />
+
+<script>
+  window.CordovaApp.loggedIn = true;
+  window.CordovaApp.hasApp = false;
+  window.CordovaApp.advertiseApp = true;
+  window.CordovaApp.urls = {
+    iOS:     "https://geo.itunes.apple.com/us/app/planio/id652346429?mt=8",
+    Android: "intent://issue.pbsbiotech.com/#Intent;scheme=planio;package=io.plan.app.cordova;end"
+  };
+</script>
+
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-itunes-app" content="app-id=652346429,app-argument=https://issue.pbsbiotech.com/"/>
+ <script type="text/javascript">
+//<![CDATA[
+
+  var crm_issue_kind = '';
+
+//]]>
+</script>
+<link href="/plugin_assets/redmine_crm/stylesheets/redmine_crm.css" media="screen" rel="stylesheet" type="text/css" />
+ <link href="/plugin_assets/redmine_gitosis/stylesheets/redmine_gitosis.css" media="screen" rel="stylesheet" type="text/css" />
+ <link rel="search" type="application/opensearchdescription+xml" href="/opensearch" title="PBS Biotech Issuetracker" />
+  <link href="/plugin_assets/redmine_tenantable/stylesheets/redmine_tenantable.css" media="screen" rel="stylesheet" type="text/css" />
+
+<!-- iOS App -->
+<link href="https://assets.plan.io/images/apple-touch-icon.png" rel="apple-touch-icon" />
+
+
+<!-- Open Graph -->
+<meta content="PBS Biotech Issuetracker" property="og:title" />
+<meta content="!http://pbsbiotech.com/wp-content/themes/revolution_pro-40/images/logo.jpg!" property="og:description" />
+<meta content="https://issue.pbsbiotech.com/" property="og:url" />
+
+<!-- Twitter Card -->
+<meta content="summary" property="twitter:card" />
+<meta content="@planio" property="twitter:site" />
+<meta content="PBS Biotech Issuetracker" property="twitter:title" />
+<meta content="!http://pbsbiotech.com/wp-content/themes/revolution_pro-40/images/logo.jpg!" property="twitter:description" />
+<meta content="652346429" property="twitter:app:id:iphone" />
+
+ <link href="/plugin_assets/redmine_tour/stylesheets/hopscotch.css" media="screen" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript" charset="utf-8">
+
+  hopscotch.registerHelper('showStep', function(idx) {
+    hopscotch.showStep(idx);
+  });
+
+  hopscotch.registerHelper('increaseSeenCount', function(tour) {
+    RedmineTour.increaseSeenCount(tour);
+  });
+
+  hopscotch.registerHelper('showTourButtonCallout', function() {
+    if(!RedmineTour.tourButtonCalloutSeenEnough){
+      RedmineTour.showTourButtonCallout();
+    }
+  });
+
+  hopscotch.registerHelper('scrollToTab', function(tab) {
+    if(typeof scrollToTab == 'function') {
+      scrollToTab(tab, {scrollSpeed: 1000});
+    }
+  });
+
+
+  RedmineTour = new (function(){
+
+    this.defaultDataLoaded = true;
+    this.loggedIn = true;
+    this.loginPage = false;
+    this.projectCreated = true;
+    this.usersInvited = true;
+    this.userIsRecentAdmin = false;
+    this.userIsRecentNonAdmin = false;
+    this.inviteUsersTourSeenEnough = false;
+    this.adminWelcomeTourSeenEnough = false;
+    this.nonAdminWelcomeTourSeenEnough = false;
+    this.tourButtonCalloutSeenEnough = false;
+    this.creditcardExpiredSeenEnough = false;
+
+    this.specialTour = null;
+    this.creditcardExpired = false;
+    this.helpLink = '#header .flat-menu__item--help .js-dropdown-toggle';
+
+    this.restart = function(){
+  	  hopscotch.endTour();
+      RedmineTour.startOrResume();
+  		return false;
+  	}
+
+  	this.redirectToContact = function(){
+      window.location.replace('http://plan.io/contact');
+    }
+
+    this.increaseSeenCount = function(tour){
+      var uri = '/tours/__dynamic__/increase_seen_count';
+      uri = uri.replace('__dynamic__', tour);
+
+      $.post(uri);
+
+    }
+
+    this.showTourButtonCallout = function(){
+
+      if(RedmineTour.loggedIn) {
+        RedmineTour.increaseSeenCount('tour_button_callout');
+      }
+
+      if($(RedmineTour.helpLink).length > 0){
+        var calloutMgr = hopscotch.getCalloutManager();
+        calloutMgr.createCallout({
+          id: 'tour-button',
+          target: RedmineTour.helpLink,
+          placement: 'left',
+          zindex: 100000,
+          title: "Getting help",
+          content: "Should you need help later on, simply click here to display these help popups again."
+        });
+      }
+    }
+
+    this.startOrResume = function(tourToResume, force) {
+      if(force) {
+        var uri = '/tours/__dynamic__';
+      } else {
+        var uri = '/tours/__dynamic__?a=index&amp;c=welcome&amp;t=__dynamic_tab__';
+
+        // assign tab
+        var selectedTab = $('#content div.tabs a.selected');
+        if(selectedTab.length > 0) {
+          uri = uri.replace('__dynamic_tab__', selectedTab[0].id.replace('tab-', ''));
+        }else{
+          uri = uri.replace('__dynamic_tab__', '');
+        }
+      }
+
+      if(tourToResume) {
+        uri = uri.replace('__dynamic__', tourToResume)
+      }
+
+      $.getJSON(uri)
+        .done(function(tourDefinition) {
+          // only start/resume tour IF we have steps AND
+          // the tour can start (only_show_if evaluated to true)
+          // OR we already have a currently running tour (getState() returns something)
+          if(tourDefinition['steps'].length > 0 && (tourDefinition['canStart'] || hopscotch.getState())){
+            hopscotch.startTour(tourDefinition);
+          }else if(tourDefinition['error']){
+            var calloutMgr = hopscotch.getCalloutManager();
+            calloutMgr.createCallout({
+              id: 'tour-error',
+              target: '#header h1',
+              placement: 'bottom',
+		      xOffset: -250,
+		      arrowOffset: 250,
+              zindex: 100000,
+              showCTAButton: false,
+              title: tourDefinition['error']['title'],
+              content: tourDefinition['error']['content']
+            });
+
+          }else if(!tourToResume){
+
+            if(RedmineTour.userIsRecentAdmin && !RedmineTour.adminWelcomeTourSeenEnough) {
+              RedmineTour.startOrResume('welcome_tour');
+            } else {
+              var calloutMgr = hopscotch.getCalloutManager();
+              calloutMgr.createCallout({
+                id: 'no-tour-available',
+                target: RedmineTour.helpLink,
+                placement: 'left',
+                zindex: 100000,
+                showCTAButton: true,
+                onCTA: RedmineTour.redirectToContact,
+                title: "Please get in touch!",
+                content: "<p>We\'re sorry, but for this page, there\'s no on-line help available.<\/p><p>If you have questions, please get in touch with our customer support and we will be happy to help!<\/p>",
+                ctaLabel: "Contact support"
+              });
+            }
+          }
+        });
+    }
+  });
+
+
+  $(document).ready(function() {
+    if(!isMobile()){
+      var state = hopscotch.getState();
+
+      if(RedmineTour.loggedIn && RedmineTour.specialTour){
+    	  hopscotch.endTour();
+        RedmineTour.startOrResume(RedmineTour.specialTour, true);
+      } else if(state){ // if a previous tour was running, resume it
+        var statePair = state.split(':');
+        if(statePair[0] == 'password_hint_tour'){ // but not in case of password hint tour (which starts automaically)
+      	  hopscotch.endTour();
+        }else{
+          RedmineTour.startOrResume(statePair[0]);
+        }
+      } else if(RedmineTour.userIsRecentNonAdmin && !RedmineTour.nonAdminWelcomeTourSeenEnough) { // or show non-admin welcome tour
+        RedmineTour.startOrResume('non_admin_welcome_tour', true);
+      } else if(RedmineTour.userIsRecentAdmin && !RedmineTour.adminWelcomeTourSeenEnough) { // or show welcome tour
+        RedmineTour.startOrResume('welcome_tour', true);
+      } else if(RedmineTour.userIsRecentAdmin && !RedmineTour.usersInvited && !RedmineTour.inviteUsersTourSeenEnough) { // or show invite users tour
+        RedmineTour.startOrResume('invite_users_tour',true);
+      } else if(RedmineTour.creditcardExpired && !RedmineTour.creditcardExpiredSeenEnough) {
+        RedmineTour.startOrResume('creditcard_expired_tour',true);
+      } else if(RedmineTour.loginPage) {
+        setTimeout(function(){RedmineTour.startOrResume('password_hint_tour',true);}, 5000);
+      }
+    }
+  });
+
+</script>
+ <link href="/plugin_assets/redmine_agile/stylesheets/redmine_agile.css?1458299595" media="screen" rel="stylesheet" type="text/css" /> <link href="/plugin_assets/redmine_announcements/stylesheets/redmine_announcements.css" media="screen" rel="stylesheet" type="text/css" />
+ <link href="/plugin_assets/redmine_checklists/stylesheets/checklists.css?1448187653" media="screen" rel="stylesheet" type="text/css" />
+<!-- page specific tags -->
+<link href="https://issue.pbsbiotech.com/news.atom?key=23897d74863558a24af79a6e8ef8975933430870" rel="alternate" title="PBS Biotech Issuetracker: Latest blog articles" type="application/atom+xml" />
+<link href="https://issue.pbsbiotech.com/activity.atom?key=23897d74863558a24af79a6e8ef8975933430870" rel="alternate" title="PBS Biotech Issuetracker: Activity" type="application/atom+xml" />
+<script src="/assets/planio-dc072e2f79036714ec1abb31355df46d.js" type="text/javascript"></script>
+</head>
+<body class="theme-planio_flat theme-feature-flat_activity theme-feature-flat_menu theme-feature-hidden_sidebar theme-feature-fixed_project_menu theme-feature-smooth_tab_scroll controller-welcome action-index density-comfortable">
+<div id="wrapper">
+
+<div class="flyout-menu js-flyout-menu">
+
+        <div class="flyout-menu__search">
+            <form accept-charset="UTF-8" action="/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+            
+            <label class="search-magnifier search-magnifier--flyout" for="flyout-search">&#9906;</label>
+            <input class="small js-search-input" id="flyout-search" name="q" placeholder="Search" type="text" />
+</form>        </div>
+    <div class="flyout-menu__avatar ">
+        <img alt="" class="gravatar" default="https://assets.plan.io/images/default_avatar_dark.png" height="80" rating="PG" src="https://secure.gravatar.com/avatar/a3204aa6e2a50c6c5f4491ece24f8d25?rating=PG&amp;size=80&amp;default=https%3A%2F%2Fassets.plan.io%2Fimages%2Fdefault_avatar_dark.png" ssl="true" title="" width="80" />
+        <a href="/users/39" class="user active">nstarkweather</a>
+    </div>
+      <span class="flyout-menu__flat_menu">
+        <ul>
+          <li></li>
+          
+  <li>
+    <a href="javascript:" class="js-proxy-click"
+       data-proxy=".flat-menu .js-notification-toggle, .js-flyout-menu-toggle-button">
+      <span class="js-notification-count notification-badge" style="display:none;">0</span>
+      Notifications
+    </a>
+  </li>
+
+
+        </ul>
+      </span>
+    <h3>Profile</h3>
+    <span class="js-general-menu"></span>
+    <span class="js-sidebar flyout-menu__sidebar"></span>
+    <h3>Help</h3>
+    <span class="js-profile-menu"></span>
+</div>
+
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+	    <ul><li><a href="http://plan.io/contact" class="redmine-tour-help tour" onclick="return RedmineTour.restart();">Tour this page</a></li><li><a href="https://plan.io/frequently-asked-questions/" class="faq" target="_blank">Frequent Planio Questions</a></li><li><a href="https://plan.io/get-productive-with-planio-in-10-minutes/" class="separator guides" target="_blank">Learning Resources</a></li><li><a href="https://plan.io/get-productive-with-planio-in-10-minutes/" class="guide-itemget productive with planio in 10 minutes" target="_blank">Get productive with Planio in 10 minutes</a></li></ul>    </div>
+    <div id="loggedas">Logged in as <a href="/users/39" class="user active">nstarkweather</a></div>
+    <ul><li><a href="/my/page" class="my-page">My page</a></li><li><a href="/my/account" class="my-account">My account</a></li><li><a href="javascript:" class="hidden cordova-app-switch-domain">Switch Planio account</a></li><li><a href="javascript:" class="hidden cordova-app-open-app">Open in Planio App</a></li><li><a href="javascript:" class="hidden cordova-app-share">Share current page</a></li></ul>    <ul><li><a href="/projects" class="projects">Projects</a></li><li><a href="/companies" class="crm-top-menu">Contacts</a></li><li><a href="/logout" class="logout" data-method="post" rel="nofollow">Sign out</a></li></ul></div>
+
+<div id="header">
+
+    <a href="#" class="mobile-toggle-button js-flyout-menu-toggle-button"></a>
+
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        
+        <label for='q'>
+          <a href="/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        <div class="jump-box-wrap"><div class="jump-box-arrow"><span class="jump-box-arrow__text">Projects</span><span class="jump-box-arrow__icon"></span><select id="project_quick_jump_box" name="project_quick_jump_box" onchange="if (this.value != &#x27;&#x27;) { window.location = this.value; }"><option value="/projects/new">New project...</option><option disabled="disabled" selected="selected">---</option><option value="/projects/pbscustomer?jump=welcome">Customer Support (CRS)</option><option value="/projects/pbsdisposables?jump=welcome">Disposables</option><option value="/projects/pbsinstruments?jump=welcome">Engineering</option><option value="/projects/l-mini?jump=welcome">&nbsp;&nbsp;&#187; 1L MINI</option><option value="/projects/magic-metals?jump=welcome">&nbsp;&nbsp;&#187; Magic Metals</option><option value="/projects/manufacturing?jump=welcome">Manufacturing</option><option value="/projects/program-management?jump=welcome">Program Management</option><option value="/projects/qss?jump=welcome">Quality and Support Systems</option><option value="/projects/pbssoftware?jump=welcome">Software</option><option value="/projects/swtesting?jump=welcome">&nbsp;&nbsp;&#187; SW Testing/Verification</option><option value="/projects/system-qualification-testing?jump=welcome">System Qualification Testing</option></select></div></div>
+            <ul class="flat-menu">
+                
+                <li class="flat-menu__item flat-menu__item--help">
+                    <a href="#" class="js-dropdown-toggle hidden-mobile">
+                        <span class="flat-menu__label">Help</span>
+                        <span class="flat-menu__caret"></span>
+                    </a>
+                    <ul><li><a href="http://plan.io/contact" class="redmine-tour-help tour" onclick="return RedmineTour.restart();">Tour this page</a></li><li><a href="https://plan.io/frequently-asked-questions/" class="faq" target="_blank">Frequent Planio Questions</a></li><li><a href="https://plan.io/get-productive-with-planio-in-10-minutes/" class="separator guides" target="_blank">Learning Resources</a></li><li><a href="https://plan.io/get-productive-with-planio-in-10-minutes/" class="guide-itemget productive with planio in 10 minutes" target="_blank">Get productive with Planio in 10 minutes</a></li></ul>                </li><li class="flat-menu__item flat-menu__item--user">
+                    <a href="#" class="js-dropdown-toggle">
+                        <img alt="" class="gravatar" default="https://assets.plan.io/images/default_avatar_dark.png" height="80" rating="PG" src="https://secure.gravatar.com/avatar/a3204aa6e2a50c6c5f4491ece24f8d25?rating=PG&amp;size=80&amp;default=https%3A%2F%2Fassets.plan.io%2Fimages%2Fdefault_avatar_dark.png" ssl="true" title="" width="80" />
+                        <span class="flat-menu__label">Nathan</span>
+                        <span class="flat-menu__caret"></span>
+                    </a>
+                    <ul class="flat-menu__dropdown-holder">
+                        <li>
+                            <ul><li><a href="/my/page" class="my-page">My page</a></li><li><a href="/my/account" class="my-account">My account</a></li><li><a href="javascript:" class="hidden cordova-app-switch-domain">Switch Planio account</a></li><li><a href="javascript:" class="hidden cordova-app-open-app">Open in Planio App</a></li><li><a href="javascript:" class="hidden cordova-app-share">Share current page</a></li></ul>                        </li>
+                        <li>
+                            <ul><li><a href="/projects" class="projects">Projects</a></li><li><a href="/companies" class="crm-top-menu">Contacts</a></li><li><a href="/logout" class="logout" data-method="post" rel="nofollow">Sign out</a></li></ul>                        </li>
+                    </ul>
+                </li>
+                
+  <li class="flat-menu__item flat-menu__item--notifications">
+    <a href="#" class="js-dropdown-toggle js-notification-toggle"
+       data-href="/push_notifications/fetch">
+      <span class="flat-menu__notifications">&nbsp;</span>
+      <span class="js-notification-count notification-badge" style="display:none;">0</span>
+    </a>
+
+    <ul class="notification-area js-notification-area">
+      <li class="notification-area__actions">
+  <a href="#" class="js-notification-area-filter active" data-filter="all">All (0)</a>
+  <a href="#" class="js-notification-area-filter" data-filter="assigned-to-me">Assigned to me (0)</a>
+  <a href="/push_notifications" class="remove-notifications" data-method="delete" data-remote="true" rel="nofollow">Hide all notifications</a>
+</li>
+<li class="notification-area__items js-notification-items">
+  <ul class="notification-list">
+    <li class="notification-list__empty">
+      <span class="notification-list__empty__headline">All caught up!</span>
+      <span class="notification-list__empty__icon">
+      </span>
+      <span class="notification-list__empty__subline">
+        There are no new notifications.
+          <a href="https://twitter.com/intent/tweet?hashtags=productivity%2Cgettingthingsdone&amp;text=Yay%21+I%27ve+finished+all+my+tickets+in+%40planio+for+today.&amp;url=https%3A%2F%2Fpic.twitter.com%2F2vGFmG4i2q&amp;via=planio" class="icon icon-tweet" target="_blank">That&#x27;s worth a tweet, no?</a>
+      </span>
+    </li>
+  </ul>
+</li>
+
+    </ul>
+  </li>
+
+                
+
+<li class="flat-menu__item">
+    <a href="#" class="js-dropdown-toggle hidden-mobile">
+      <span class="flat-menu__activity-timer">&nbsp;</span>
+      
+    </a>
+
+    <ul class="flat-menu__dropdown-holder">
+        <li>
+          <ul>
+            <li>
+                <a href="/start_timer">Track time</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <ul><li><a href="/time_entries/new" class="separator log-time">Log time</a></li><li><a href="/time_entries" class="spent-time">Spent time</a></li><li><a href="/time_entries/report" class="report">Report</a></li></ul>        </li>
+    </ul>
+
+</li>
+ <li class="flat-menu__item flat-menu__item--share hidden">
+  <a href="javascript:" class="cordova-app-share cordova-app-icon-link" title="Share current page">
+    <span class="icon icon-share"></span>
+  </a>
+</li>
+<li class="flat-menu__item flat-menu__item--open-app hidden">
+  <a href="javascript:" class="cordova-app-open-app cordova-app-icon-link" title="Open in Planio App">
+    <span class="icon icon-android"></span>
+    <span class="icon icon-ios"></span>
+  </a>
+</li>
+
+            </ul>
+    </div>
+
+    <h1><a href="/" class="home-link"></a>PBS Biotech Issuetracker</h1>
+
+</div>
+
+<div id="main" class="nosidebar">
+    
+    <div id="sidebar">
+      
+        
+        
+    </div>
+
+    <div id="content">
+      
+ 
+
+        
+        <div class="contextual">
+    <a href="/projects/new" class="icon icon-add">New project</a>
+</div>
+
+<h2>Home</h2>
+
+<div class="splitcontentleft">
+  <div class="wiki">
+    <p><img src="https://external.planio.media/i/http://pbsbiotech.com/wp-content/themes/revolution_pro-40/images/logo.jpg" data-orig-src="http://pbsbiotech.com/wp-content/themes/revolution_pro-40/images/logo.jpg" alt="" /></p>
+  </div>
+  <div class="news box">
+  <h3>Latest blog articles</h3>
+    <p><a href="/projects/pbssoftware">Software</a>: 
+<a href="/news/2">3 instruments shipped to GC Oct 22 2010</a>
+
+<br />
+<span class="summary">2 x 3L and 1 x 80L instruments shipped with CPU slowdown software.  on Nov 1
+I will be at GC to update SW</span><br />
+<span class="author">Added by <a href="/users/4" class="user active">Daniel Giroux</a> <abbr title="10/23/2010 01:05 PM">almost 6 years</abbr> ago</span></p>
+
+    <a href="/news">View all blog articles</a>
+  </div>
+  
+</div>
+
+<div class="splitcontentright">
+  <div class="projects box">
+  <h3>Latest projects</h3>
+    <ul>
+      <li>
+      <a href="/projects/l-mini">1L MINI</a> (08/17/2016 09:46 AM)
+      
+      </li>
+      <li>
+      <a href="/projects/magic-metals">Magic Metals</a> (06/17/2015 11:07 AM)
+      
+      </li>
+      <li>
+      <a href="/projects/program-management">Program Management</a> (03/11/2015 11:01 AM)
+      <p>...</p>
+      </li>
+      <li>
+      <a href="/projects/manufacturing">Manufacturing</a> (06/14/2012 03:13 PM)
+      <p>This project is to track the progress of machines through manufacturing and testing. Please open a new issue with each new machine build as well as when a work order is issued for rework or repair. Please title each issue with: MODEL /  SERIAL / WORK ORDER / DESCRIPTION</p>
+      </li>
+      <li>
+      <a href="/projects/system-qualification-testing">System Qualification Testing</a> (12/05/2011 10:51 AM)
+      <p>...</p>
+      </li>
+    </ul>
+  </div>
+    
+</div>
+
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2016 Jean-Philippe Lang, et al. <strong><a href="https://plan.io/">Cheerfully provided by&nbsp;<img alt="Planio" height="10" src="/assets/planio_logo_gray_82x20-42bbd05e61a6acf9cd994f6928e218af.png" style="vertical-align:bottom;" width="41" />.</a></strong>
+  </div></div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+initNoembed();
+//]]>
+</script>
+  <script type="text/javascript">
+//<![CDATA[
+
+    $(document).ready(function(){
+    PushNotifications.endpointRegisteringUrl = 'https://issue.pbsbiotech.com/push_devices?key=1843859e27a6fba43cd3557f40228b2edbf140c8';
+    PushNotifications.pullDataUrl = 'https://issue.pbsbiotech.com/push_notifications?key=1843859e27a6fba43cd3557f40228b2edbf140c8&skip_title_metadata=true';
+    PushNotifications.userPushKey = '1843859e27a6fba43cd3557f40228b2edbf140c8';
+    PushNotifications.apnWebServiceUrl = 'https://issue.pbsbiotech.com/push_notifications';
+    PushNotifications.knownEndpoints = ["eSkINGVwaBc:APA91bH5Pn8Te3lXRj3b35qkF6tV55aQ8zMuf8UHNEVO1cpinc1v1i5RgWJVO4vmI9OM0BgX1lugGq7CFe3OcUamtQS2wtRBFn2dHRU-U3TWxKSke2rokhjrFaX5XrmcWq7DMnQbt5an","eIj1OIvy-BA:APA91bHxfi77Omoikqk8-DbvMZSo-ZlYPkCmfNGtVfjQOIUsELqOR2oIVFZh1x83BPRn9z6iDTktegRMPdDwlU-vZUCZysulJOKYXKn9N8okFUQS1siPuixKiFe5cBaNfKA1sxJmBTrw","f96dHPM8mwk:APA91bHRdhr5naO1_x88V99WLWuUl4omA-IC-Ez0kQKzu5LLe0BDxnqWJjSVuWSofWqEHu7CS76yfBI48BZfscPHS3hVobwiHuyjMcE4u4SOKst2eW-zuvtU2l85dC9d7yErL1sL7anQ"];
+      PushNotifications.enable(jQuery);
+    });
+
+//]]>
+</script>  
+
+</body>
+</html>
