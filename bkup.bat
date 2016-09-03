@@ -24,7 +24,7 @@ CALL :check_err
 @echo off
 CALL :check_err
 
-exit
+goto :eof
 
 :check_err
 IF %ERRORLEVEL% NEQ 0 (
