@@ -30,6 +30,6 @@ exit
 IF %ERRORLEVEL% NEQ 0 (
     echo "Error: exiting"
     pause
-    exit
+    goto :eof
 )
 GOTO :eof
