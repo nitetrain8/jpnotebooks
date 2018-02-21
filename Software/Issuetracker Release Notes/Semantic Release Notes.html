@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<!-- saved from url=(0107)http://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html -->
+<html class="no-js" lang="en"><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--<base href="https://raw.githubusercontent.com/avanderhoorn/Semantic-Release-Notes/master/index.html">--><base href=".">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Semantic Release Notes</title>
+    <meta name="description" content="">
+
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="./Semantic Release Notes_files/style.css"> 
+</head>
+<body>
+    <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+    <div class="wrapper"> 
+        <section class="box box-top">
+            <h1>Semantic Release Notes <span class="light">v 0.4-beta</span></h1> 
+        </section>
+        <header>
+            <div class="header-inner">
+                <div class="author">
+                    By <strong><a href="https://twitter.com/anthony_vdh">Anthony van der Hoorn</a></strong><br> &amp; <strong><a href="https://twitter.com/nikmd23">Nik Molnar</a></strong> 
+                </div>
+                <ul>
+                    <li><a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Main">Main</a></li> 
+                    <li><a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Syntax">Syntax</a></li>
+                    <li><a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Examples">Examples</a></li>
+                    <li><a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Editor">Live Editor</a></li>
+                    <li><a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#MicroFormat">Micro Format</a></li>
+                    <li><a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Tools">Tools</a></li>
+                </ul>
+            </div>
+        </header>  
+        <section class="box box-main">
+            <div style="width:95%; margin: auto; background-color: lightyellow; border: 1px solid goldenrod; color: goldenrod; margin: -5px auto 15px; padding: 10px; text-align: center;">
+                <strong>NOTE:</strong> SRN is currently a proposal &amp; requires feedback. To make it better please join in the conversation at our <a href="https://github.com/Glimpse/Semantic-Release-Notes/issues">GitHub repository</a>.
+            </div>
+            <div>
+                <input name="menu-root-radio" class="menu-root-radio" id="Main" type="radio" checked="checked">
+                <a id="Main"></a>
+                <div class="section-main">
+                    <p>
+                        Semantic Release Notes (SRN) is a text-to-object-to-html conversion tool for application authors. SRN 
+                        specifically aims to produce <em>semantic</em> <strong>release notes</strong> from a Markdown document. 
+                        This allows authors to write using an easy-to-read, easy-to-write plain text document, convert it to a structured data format
+                        (typically JSON or XML) and from this format, convert it into any styled representation (typically html) or to consume the 
+                        information programatically within 3rd party applications.
+                    </p> 
+                    <p>
+                        Thus, SRN is two things:
+                        </p><ol>
+                            <li>a plain text DSL (domain specific language)/syntax for writting release notes; and</li>
+                            <li>a software tool that converts said syntax into JSON/XML and subsequently HTML.</li>
+                        </ol>
+                        For details pertaining to SRN formatting, see the <a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Syntax">Syntax</a> section or 
+                        try it out, right now, using the <a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Editor">Live Editor</a> or by extending the provided <a href="https://htmlpreview.github.io/?https://github.com/avanderhoorn/Semantic-Release-Notes/blob/master/index.html#Examples"> 
+                        Examples</a>.
+                    <p></p>
+            
+                    <h3>Goals</h3> 
+                    <p>
+                        The overriding design goals for SRN's syntax is:
+                        </p><ul>
+                            <li>to make it as <strong>readable as possible</strong>,</li>
+                            <li>to <strong>support various formats</strong> in which release notes are published (Example: <a href="http://docs.nuget.org/docs/reference/nuspec-reference">NuSpec XML</a>),</li>
+                            <li>to make this document <strong>parsable by a standard Markdown parser</strong>, and</li>
+                            <li>to <strong>extract semantic release information</strong> from the document for further processing.</li>
+                        </ul> 
+                        The idea is that a SRN document should be publishable as-is, as plain text, 
+                        without looking like it's been marked up with tags or formatting instructions. This works well in a 
+                        Release Notes scenario where plain text documents usually accompany the build. Additional, with the 
+                        assumptions around the formatting of the release document, SRN can <strong>extract semantic meaning</strong> 
+                        from the plain text provided (i.e. the bugs fixed, features, included, release summaries, etc).
+                    <p></p> 
+                    <p>
+                        Once we have the type representations, we can then look at producing the following:
+                        </p><ul>
+                            <li>
+                                if a user <strong>updates through multiple versions</strong> of your product, be able to easily <strong>generate 
+                                a consolidated release note</strong> which highlights the most important changes,
+                            </li>
+                            <li>
+                                the above would also be true if the <i>user</i> wanted to view the <strong>changes that occurred 
+                                between take 2 different releases</strong> - in effect producing a "diff" at the release notes level
+                            </li>
+                            <li>
+                                be able to <strong>change the rendered display of the release notes</strong>, without changing the format of the 
+                                original source
+                            </li>
+                        </ul>
+                    <p></p>
+
+                    <h3>Sample</h3>
+                    <div class="container">
+                        <strong>Source:</strong>
+                        <pre class="code">Incremental release designed to provide an update to some of the core plugins.
+
+# System
+ - *Release Checker*: Now gives you a breakdown of exactly what you are missing. +New
+ - *Structured Layout*: An alternative layout engine that allows developers to control layout. +New
+ 
+# Plugin
+ - *Timeline*: Comes with an additional grid view to show the same data. +Changed
+ - *Ajax*: Fix that crashed poll in Chrome and IE due to log/trace statement. +Fix</pre>
+                        <strong>Object:</strong>
+                        <pre class="object">{
+    "summary" : "Incremental release designed to provide an update to some of the core plugins.",
+    "sections" : [ {
+            "items" : [ {
+                    "categories" : [ "New" ],
+                    "summary" : "*Release Checker* :  Now gives you a breakdown of exactly what you are missing."
+                }, {
+                    "categories" : [ "New" ],
+                    "summary" : "*Structured Layout* :  An alternative layout engine that allows developers to control layout."
+                } ],
+            "name" : "System",
+            "summary" : ""
+        }, {
+            "items" : [ {
+                    "categories" : [ "Changed" ],
+                    "summary" : "*Timeline* :  Comes with an additional grid view to show the same data."
+                }, {
+                    "categories" : [ "Fix" ],
+                    "summary" : "*Ajax* :  Fix that crashed poll in Chrome and IE due to log/trace statement."
+                } ],
+            "name" : "Plugin"
+        } ]
+}</pre>
+                        <strong>Result:</strong>
+                        <div class="result"><div>Incremental release designed to provide an update to some of the core plugins.<ul></ul></div><div><h1>System</h1><ul><li>{New}<em>Release Checker</em>: Now gives you a breakdown of exactly what you are missing.</li><li>{New}<em>Structured Layout</em>: An alternative layout engine that allows developers to control layout.</li></ul></div><div><h1>Plugin</h1><ul><li>{Changed}<em>Timeline</em>: Comes with an additional grid view to show the same data.</li><li>{Fix}<em>Ajax</em>: Fix that crashed poll in Chrome and IE due to log/trace statement.</li></ul></div></div>
+                    </div> 
+
+                    <h3>Why</h3>
+                    <p>
+                        With the way that we currently approach producing release notes, we lose any ability to "process" the data.
+                        If we change this and produce something that can be, a variety of different possibilities can be realized.
+                    </p>
+                    <p>
+                        Currently, most projects use either the following approaches:
+                        </p><ol>
+                            <li>a single document which lists every release, with the details of each release, or</li>
+                            <li>a document which only shows the details or the latest release, or</li>
+                            <li>a generated document which only shows the details of every release between what they had installed an how have.</li>
+                        </ol>
+                        These are mostly problematic as they aren't able to isolate which details the user should know about and in
+                        most cases, drowns the user in more information than they can/want to take in.
+                    <p></p>
+                    <p>
+                        What we should be aiming for, is to help the users find what is the most important information 
+                        they should know about. If we do this, users are more likely to find the information we as 
+                        developers want them to know about and be educated as to what items in the release they may care about
+                    </p>
+
+                    <h3>Influences</h3> 
+                    <p>
+                        The establishment of the overall syntax and simplicity of the SRN syntax is based on <strong>Markdown</strong>.
+                        As stated, a document based on SRN's syntax should be able to be parsed by a standard Markdown parser. 
+                        This means that besides making the document human readable, it means that systems that aren't SRN 
+                        aware but are Markdown aware, can still parse the documents.
+                    </p> 
+                    <p>
+                        The idea of being able to extract semantic meaning from the release notes, isn't established here, rather 
+                        influences where drawn from the semantic syntax of <strong>Todo.txt</strong> files. Documents that 
+                        follow the conventions of the Todo.txt "standard" are able to extract typed information within the 
+                        TODO domain from the document. The origins on the standard are similar to those of Markdown (a need 
+                        for human readability), but also a need to be able to define tasks, which are complete, what priority 
+                        a given task has, etc.
+                    </p>
+                    
+                    <h3>Acknowledgements</h3> 
+                    <p>
+                        <a href="http://daringfireball.net/">John Gruber</a> deserves a tremendous amount of credit 
+                        for this original work on <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, as does 
+                        <a href="http://ginatrapani.org/">Gina Trapani</a> and her work on <a href="http://todotxt.com/">Todo.txt</a>.
+                    </p>
+                </div>
+            </div> 
+            <div>
+                <input name="menu-root-radio" class="menu-root-radio" id="Syntax" type="radio">
+                <div class="section-basics">
+                    <a id="Syntax"></a>
+                    <h2>Syntax</h2>
+            
+                    <h3>The axes of Semantic Release Notes </h3> 
+                    <p>
+                        Using the SRN syntax, you can create a list that can be broken along various key axes.
+                        </p><ul>
+                            <li>
+                                <strong>Summary</strong>:
+                                At its most basic level, SRN should be able to take a paragraph and interpret that as the summary 
+                                of a given release. 
+                            </li>
+                            <li>
+                                <strong>Item</strong>:
+                                A release note should be able to show which "items" are included in a given release. Items typically include 
+                                features, bug fixes, or improvements. This is indicated via 
+                                a standard Markdown <em>ordered</em> or <em>unorderded</em> list. 
+                            </li>
+                            <li>
+                                <strong>Section</strong>:
+                                Lets the author group items which represent logical sections within the application. 
+                                These can be arbitrary in nature and specific to the release notes which application is for.
+                                This is indicated via a standard Markdown <em>header</em>. 
+                            </li>
+                            <li>
+                                <strong>Priority</strong>:
+                                The release note should be able to let you define the importance feature or item that has been 
+                                defined. This is indicated via a standard Markdown <em>ordered list</em>.
+                            </li>
+                            <li>
+                                <strong>Category</strong>:
+                                Additionally the release note should be able to indicate what category an item is. For instance, 
+                                "+New", "+Change", "+Bug-Fix", +Developer". This is indicated via a single word, or - (dash) delimited phrase, that has a "+" prefix. 
+                            </li>
+                            <li>
+                                <strong>Release</strong>:
+                                As SRN allows for many releases to be defined within the one block of text, the system needs 
+                                to provide a means by which an individual release can be identified.
+                                This is indicated via a standard Markdown <em>header</em>. 
+                            </li>
+                        </ul>
+                    <p></p> 
+                
+                    <h3>Summaries</h3>
+                    <p>
+                        It is useful to be able to provide summaries various parts of the release. Sections and Releases allow 
+                        for multi-line multi-paragraph summaries, whilst the summary for an Item is more restrictive, only allowing a 
+                        single paragraph descriptions. 
+                    </p>
+                    <p>
+                        In each content block, a subset of Markdown is supported -  _italic_, **bold**, `code` and [link](uri).
+                    </p>
+                    <div class="container">
+                        <strong>Examples:</strong>
+                        <pre class="code">This is a _project_ summary with two paragraphs. 
+Lorem ipsum dolor sit amet consectetuer **adipiscing** elit. 
+Aliquam hendreritmi posuere lectus.
+
+Vestibulum `enim wisi` viverra nec fringilla in laoreet
+vitae risus. Donec sit amet nisl. Aliquam [semper](?) ipsum
+sit amet velit.</pre>
+                        <div class="result"><div>This is a <em>project</em> summary with two paragraphs.Lorem ipsum dolor sit amet consectetuer <strong>adipiscing</strong> elit.Aliquam hendreritmi posuere lectus.<br><br>Vestibulum <code>enim wisi</code> viverra nec fringilla in laoreetvitae risus. Donec sit amet nisl. Aliquam <a href="https://raw.githubusercontent.com/avanderhoorn/Semantic-Release-Notes/master/index.html?">semper</a> ipsumsit amet velit.<ul></ul></div></div>
+                        <pre class="object">{
+    "summary" : "This is a _project_ summary with two paragraphs.Lorem ipsum dolor sit amet consectetuer **adipiscing** elit.Aliquam hendreritmi posuere lectus.\n\nVestibulum `enim wisi` viverra nec fringilla in laoreetvitae risus. Donec sit amet nisl. Aliquam [ semper ](?) ipsumsit amet velit."
+}</pre>
+                    </div> 
+                
+                    <h3>Items</h3>
+                    <p>
+                        When trying to extract individual items that make up a release, standard lists (ordered or unordered) are used. These 
+                        lists indicate the items what are a part of the Section or Release they are a part of.
+                    </p>
+                    <p>
+                        Since the syntax is a subset of Markdown the same list types are supported.   
+                    </p>
+                    <div class="container">
+                        <strong>Examples:</strong>
+                        <pre class="code"> - This is the _first_ *list* item.
+ - This is the **second** __list__ item.
+ - This is the `third` list item.
+ - This is the [forth](?) list item.</pre>
+                        <div class="result"><div><ul><li>This is the <em>first</em> <em>list</em> item.</li><li>This is the <strong>second</strong> <strong>list</strong> item.</li><li>This is the <code>third</code> list item.</li><li>This is the <a href="https://raw.githubusercontent.com/avanderhoorn/Semantic-Release-Notes/master/index.html?">forth</a> list item.</li></ul></div></div>
+                        <pre class="object">{
+    "items" : [ {
+            "summary" : "This is the _first_ *list* item."
+        }, {
+            "summary" : "This is the **second** __list__ item."
+        }, {
+            "summary" : "This is the `third` list item."
+        }, {
+            "summary" : "This is the [ forth ](?) list item."
+        } ]
+}</pre>
+                    </div> 
+                
+                    <h3>Sections</h3>
+                    <p>
+                        When trying to extract individual items that make up a release, standard lists (ordered or unordered) are used. These 
+                        lists indicate the items what are a part of the Section or Release they are a part of. These are usually used in larger 
+                        applications when it's important to isolate out different sections of the application.
+                    </p>
+                    <p>
+                        Sections are expressed through the use of headings. Also sections can have their own "Summaries" and "Items".
+                    </p>
+                    <div class="container">
+                        <strong>Examples:</strong>
+                        <pre class="code"># Section
+This is the summary for Section.
+ - This is a Section scoped first list item.
+ - This is a Section scoped second list item.
+
+# Other Section
+This is the summary for Other Section.
+ - This is a Other Section scoped first list item.
+ - This is a Other Section scoped second list item.
+                        </pre>
+                        <div class="result"><div><ul></ul></div><div><h1>Section</h1>This is the summary for Section.<ul><li>This is a Section scoped first list item.</li><li>This is a Section scoped second list item.</li></ul></div><div><h1>Other Section</h1>This is the summary for Other Section.<ul><li>This is a Other Section scoped first list item.</li><li>This is a Other Section scoped second list item.</li></ul></div></div>
+                        <pre class="object">{
+    "sections" : [ {
+            "items" : [ {
+                    "summary" : "This is a Section scoped first list item."
+                }, {
+                    "summary" : "This is a Section scoped second list item."
+                } ],
+            "name" : "Section",
+            "summary" : "This is the summary for Section."
+        }, {
+            "items" : [ {
+                    "summary" : "This is a Other Section scoped first list item."
+                }, {
+                    "summary" : "This is a Other Section scoped second list item."
+                } ],
+            "name" : "Other Section",
+            "summary" : "This is the summary for Other Section."
+        } ]
+}</pre>
+                    </div> 
+                 
+                    <h3>Priority</h3>
+                    <p>
+                        When defining items, the priority of the fix can be expressed via a standard ordered list. Normally we expect 
+                        ordered lists index to increment sequentially upwards. For our purposes, since the index represents the the 
+                        priority the values are always going to be 1, 2 or 3 - High, Normal and Minor. This means that when using 
+                        priorities an index value is likely to be replicated. 
+                    </p>
+                    <p>
+                        Since the syntax is a subset of Markdown the same ordered list types is supported. Note, the 
+                        index order isn't important.
+                    </p>
+                    <div class="container">
+                        <strong>Example:</strong>
+                        <pre class="code"> 1. This is a High priority list item.
+ 1. This is a High priority list item. 
+ 2. This is a Normal priority list item. 
+ 1. This is a High priority list item. 
+ 2. This is a Normal priority list item.
+ 3. This is a Minor priority list item.
+ 3. This is a Minor priority list item. 
+                        </pre>
+                        <div class="result"><div><ul class="srn-priorities"><li srn-priority="1">This is a High priority list item.</li><li srn-priority="1">This is a High priority list item.</li><li srn-priority="2">This is a Normal priority list item.</li><li srn-priority="1">This is a High priority list item.</li><li srn-priority="2">This is a Normal priority list item.</li><li srn-priority="3">This is a Minor priority list item.</li><li srn-priority="3">This is a Minor priority list item.</li></ul></div></div>
+                        <pre class="object">{
+    "items" : [ {
+            "priority" : "1",
+            "summary" : "This is a High priority list item."
+        }, {
+            "priority" : "1",
+            "summary" : "This is a High priority list item."
+        }, {
+            "priority" : "2",
+            "summary" : "This is a Normal priority list item."
+        }, {
+            "priority" : "1",
+            "summary" : "This is a High priority list item."
+        }, {
+            "priority" : "2",
+            "summary" : "This is a Normal priority list item."
+        }, {
+            "priority" : "3",
+            "summary" : "This is a Minor priority list item."
+        }, {
+            "priority" : "3",
+            "summary" : "This is a Minor priority list item."
+        } ],
+    "summary" : ""
+}</pre>
+                    </div> 
+
+                    <h3>Category</h3>
+                    <p>
+                        When creating creating items it's useful to be able to assign a Category to an item. Conventional Categories may be established 
+                        are with special meaning. Examples may include: New, Fix, Changed and Developer (where Developer describes a change that 
+                        developers would be interested over users).
+                    </p>
+                    <p>
+                        Markdown doesn't have an exact way of expressing this requirement, hence we use the following notation: "+New" or "+Bug-Fix".
+                    </p>
+                    <div class="container">
+                        <strong>Examples:</strong>
+                        <pre class="code"> - This is a +new list item.
+ - This is a +Fix list item.
+ - This is a +Change list item.
+ - +New features are everyone's favorites.
+ - This is a list item for a +Developer.
+ - This is a +super-special custom list item.
+ - This is my last +DEVELOPER list item. +New
+                        </pre>
+                        <div class="result"><div><ul><li>{New}This is a new list item.</li><li>{Fix}This is a Fix list item.</li><li>{Change}This is a Change list item.</li><li>{New}New features are everyone's favorites.</li><li>{Developer}This is a list item for a Developer.</li><li>{Super Special}This is a super-special custom list item.</li><li>{Developer, New}This is my last DEVELOPER list item.</li></ul></div></div>
+                        <pre class="object">{
+    "items" : [ {
+            "categories" : [ "New" ],
+            "summary" : "This is a new list item."
+        }, {
+            "categories" : [ "Fix" ],
+            "summary" : "This is a Fix list item."
+        }, {
+            "categories" : [ "Change" ],
+            "summary" : "This is a Change list item."
+        }, {
+            "categories" : [ "New" ],
+            "summary" : "New features are everyone's favorites."
+        }, {
+            "categories" : [ "Developer" ],
+            "summary" : "This is a list item for a Developer."
+        }, {
+            "categories" : [ "Super Special" ],
+            "summary" : "This is a super-special custom list item."
+        }, {
+            "categories" : [ "Developer", "New" ],
+            "summary" : "This is my last DEVELOPER list item."
+        } ],
+    "summary" : ""
+}</pre>
+                    </div> 
+            
+                    <h3>Release (Not Working)</h3>
+                    <p>
+                        In some cases we want to have the one document that describes many releases. In this case, the 
+                        syntax simply allows you to define a heading which is the Version Number. If you use this feature 
+                        in conjunction with sections, Section headers are also altered.
+                    </p>
+                    <p>
+                        For the purposes of interpretation of the version number, it is assumed that you are using 
+                        Semantic Visioning - <a href="http://semver.org/">http://semver.org/</a>. Normal Markdown headers 
+                        are used to describe the version number for each release and the scope 
+                        of reach release (which item, etc makes up the release).
+                    </p>
+                    <div class="container">
+                        <strong>Examples:</strong>
+                        Not yet specified.
+                        <!--
+                        <pre class="code"># 1.1
+This is the release summary for 1.1
+
+# 1.2
+This is the release summary for 1.2
+
+# 2.0
+This is the release summary for 2.0
+                        </pre>
+                        <div class="result"></div>
+                        <pre class="object"></pre>
+                        -->
+                    </div><!--
+                    <div class="container">
+                        <strong>Examples:</strong>
+                        Not yet specified.
+                        <pre class="code"># 1.1
+This is the release summary for 1.1
+
+## Section
+This is the summary for Section for 1.1.
+
+## Other Section
+This is the summary for Other Section for 1.1.
+
+# 1.2
+This is the release summary for 1.2
+
+## Section
+This is the summary for Section for 1.2.
+
+# 2.0
+This is the release summary for 2.0
+
+## Section
+This is the summary for Section for 2.0.
+
+## Other Section
+This is the summary for Other Section for 2.0.
+                        </pre>
+                        <div class="result"></div>
+                        <pre class="object"></pre>
+                    </div>-->
+                </div>
+            </div> 
+            <div>
+                <input name="menu-root-radio" class="menu-root-radio" id="Examples" type="radio">
+                <div class="section-syntax"> 
+                    <a id="Exmaples"></a>
+                    <h2>Examples</h2>
+                    <div class="section-editor">
+                        <ul class="tabs">
+                            <li><a class="active" data-tab="1">Example A</a></li>
+                            <li><a data-tab="2">Example B</a></li>
+                            <li><a data-tab="3">Example C</a></li>
+                            <li><a data-tab="4">Example D</a></li>
+                        </ul> 
+                        <ul class="tabs-content example">
+                            <li class="active container" data-tab="1">
+                                <p>Simple example of how a summary can be used in conjunction with release items.</p>
+                                <strong>Source:</strong>
+                                <pre class="code">Incremental release designed to provide an update to some of the core plugins.
+
+ - Release Checker: Now gives you a breakdown of exactly what you are missing. +New
+ - Structured Layout: An alternative layout engine that allows developers to control layout. +New
+ - Timeline: Comes with an additional grid view to show the same data. +Changed
+ - Ajax: Fix that crashed poll in Chrome and IE due to log/trace statement. +Fix</pre>
+                                <strong>Result:</strong>
+                                <div class="result"><div>Incremental release designed to provide an update to some of the core plugins.<ul><li>{New}Release Checker: Now gives you a breakdown of exactly what you are missing.</li><li>{New}Structured Layout: An alternative layout engine that allows developers to control layout.</li><li>{Changed}Timeline: Comes with an additional grid view to show the same data.</li><li>{Fix}Ajax: Fix that crashed poll in Chrome and IE due to log/trace statement.</li></ul></div></div>
+                                <strong>Object:</strong>
+                                <pre class="object">{
+    "summary" : "Incremental release designed to provide an update to some of the core plugins.",
+    "items" : [ {
+            "categories" : [ "New" ],
+            "summary" : "Release Checker :  Now gives you a breakdown of exactly what you are missing."
+        }, {
+            "categories" : [ "New" ],
+            "summary" : "Structured Layout :  An alternative layout engine that allows developers to control layout."
+        }, {
+            "categories" : [ "Changed" ],
+            "summary" : "Timeline :  Comes with an additional grid view to show the same data."
+        }, {
+            "categories" : [ "Fix" ],
+            "summary" : "Ajax :  Fix that crashed poll in Chrome and IE due to log/trace statement."
+        } ]
+}</pre>
+                            </li>
+                            <li class="container" data-tab="2">
+                                <p>This introduces the concept of sections, along with the items that can be linked with a section.</p>
+                                <strong>Source:</strong>
+                                <pre class="code">Incremental release designed to provide an update to some of the core plugins.
+
+# System
+ - *Release Checker*: Now gives you a breakdown of exactly what you are missing. +New
+ - *Structured Layout*: An alternative layout engine that allows developers to control layout. +New
+ 
+# Plugin
+ - *Timeline*: Comes with an additional grid view to show the same data. +Changed
+ - *Ajax*: Fix that crashed poll in Chrome and IE due to log/trace statement. +Fix</pre>
+                                <strong>Result:</strong>
+                                <div class="result"><div>Incremental release designed to provide an update to some of the core plugins.<ul></ul></div><div><h1>System</h1><ul><li>{New}<em>Release Checker</em>: Now gives you a breakdown of exactly what you are missing.</li><li>{New}<em>Structured Layout</em>: An alternative layout engine that allows developers to control layout.</li></ul></div><div><h1>Plugin</h1><ul><li>{Changed}<em>Timeline</em>: Comes with an additional grid view to show the same data.</li><li>{Fix}<em>Ajax</em>: Fix that crashed poll in Chrome and IE due to log/trace statement.</li></ul></div></div>
+                                <strong>Object:</strong>
+                                <pre class="object">{
+    "summary" : "Incremental release designed to provide an update to some of the core plugins.",
+    "sections" : [ {
+            "items" : [ {
+                    "categories" : [ "New" ],
+                    "summary" : "*Release Checker* :  Now gives you a breakdown of exactly what you are missing."
+                }, {
+                    "categories" : [ "New" ],
+                    "summary" : "*Structured Layout* :  An alternative layout engine that allows developers to control layout."
+                } ],
+            "name" : "System",
+            "summary" : ""
+        }, {
+            "items" : [ {
+                    "categories" : [ "Changed" ],
+                    "summary" : "*Timeline* :  Comes with an additional grid view to show the same data."
+                }, {
+                    "categories" : [ "Fix" ],
+                    "summary" : "*Ajax* :  Fix that crashed poll in Chrome and IE due to log/trace statement."
+                } ],
+            "name" : "Plugin"
+        } ]
+}</pre>
+                            </li>
+                            <li class="container" data-tab="3">
+                                <p>More complex example that shows how general a general summary and items can be linked to a release,
+                                    along with a summary and items that can be linked to sections. Also shows how categories can be used.</p>
+                                <strong>Source:</strong>
+                                <pre class="code">Incremental release designed to provide an update to some of the core plugins.
+ - *Example*: You can have global issues that aren't grouped to a section
+
+# System
+This description is specific to system section.
+ - *Release Checker*: Now gives you a +new breakdown of exactly what you are missing.
+ - *Structured Layout*: A +new alternative layout engine that allows developers to control layout.
+
+# Plugin
+This description is specific to plugin section.
+ - *Timeline*: Comes with an additional grid view to show the same data. +Changed
+ - *Ajax*: +Fix that crashed poll in Chrome and IE due to log/trace statement. [[i1234][http://getglimpse.com]]</pre>
+                                <strong>Result:</strong>
+                                <div class="result"><div>Incremental release designed to provide an update to some of the core plugins.<ul><li><em>Example</em>: You can have global issues that aren't grouped to a section</li></ul></div><div><h1>System</h1>This description is specific to system section.<ul><li>{New}<em>Release Checker</em>: Now gives you a new breakdown of exactly what you are missing.</li><li>{New}<em>Structured Layout</em>: A new alternative layout engine that allows developers to control layout.</li></ul></div><div><h1>Plugin</h1>This description is specific to plugin section.<ul><li>{Changed}<em>Timeline</em>: Comes with an additional grid view to show the same data.</li><li>{Fix}<em>Ajax</em>: Fix that crashed poll in Chrome and IE due to log/trace statement. <a href="http://getglimpse.com/">i1234</a></li></ul></div></div>
+                                <strong>Object:</strong>
+                                <pre class="object">{
+    "summary" : "Incremental release designed to provide an update to some of the core plugins.",
+    "items" : [ {
+            "summary" : "*Example* :  You can have global issues that aren't grouped to a section"
+        } ],
+    "sections" : [ {
+            "items" : [ {
+                    "categories" : [ "New" ],
+                    "summary" : "*Release Checker* :  Now gives you a new breakdown of exactly what you are missing."
+                }, {
+                    "categories" : [ "New" ],
+                    "summary" : "*Structured Layout* :  A new alternative layout engine that allows developers to control layout."
+                } ],
+            "name" : "System",
+            "summary" : "This description is specific to system section."
+        }, {
+            "items" : [ {
+                    "categories" : [ "Changed" ],
+                    "summary" : "*Timeline* :  Comes with an additional grid view to show the same data."
+                }, {
+                    "taskId" : "i1234",
+                    "teskLink" : "http : //getglimpse.com",
+                    "categories" : [ "Fix" ],
+                    "summary" : "*Ajax* :  Fix that crashed poll in Chrome and IE due to log/trace statement."
+                } ],
+            "name" : "Plugin",
+            "summary" : "This description is specific to plugin section."
+        } ]
+}</pre>
+                            </li>
+                            <li class="container" data-tab="4">
+                                <p>Same as the previous sample, with the addition of priories and icons that can 
+                                    be associated with sections.</p>
+                                <strong>Source:</strong>
+                                <pre class="code">Incremental release designed to provide an update to some of the core plugins.
+ 1. *Example*: You can have global issues that aren't grouped to a section
+
+# System [[icon][http://getglimpse.com/release/icon/core.png]]
+This description is specific to system section.
+ 3. *Release Checker*: Now gives you a breakdown of exactly what you are missing. +New
+ 2. *Structured Layout*: An alternative layout engine that allows developers to control layout. +New
+
+# Plugin [[icon][http://getglimpse.com/release/icon/mvc.png]]
+This description is specific to plugin section.
+ 1. *Timeline*: Comes with an additional grid view to show the same data. +Changed
+ 1. *Ajax*: Fix that crashed poll in Chrome and IE due to log/trace statement. +Fix [[i1234][http://getglimpse.com]]</pre>
+                                <strong>Result:</strong>
+                                <div class="result"><div>Incremental release designed to provide an update to some of the core plugins.<ul class="srn-priorities"><li srn-priority="1"><em>Example</em>: You can have global issues that aren't grouped to a section</li></ul></div><div><h1>System </h1>This description is specific to system section.<ul class="srn-priorities"><li srn-priority="3">{New}<em>Release Checker</em>: Now gives you a breakdown of exactly what you are missing.</li><li srn-priority="2">{New}<em>Structured Layout</em>: An alternative layout engine that allows developers to control layout.</li></ul></div><div><h1>Plugin </h1>This description is specific to plugin section.<ul class="srn-priorities"><li srn-priority="1">{Changed}<em>Timeline</em>: Comes with an additional grid view to show the same data.</li><li srn-priority="1">{Fix}<em>Ajax</em>: Fix that crashed poll in Chrome and IE due to log/trace statement. <a href="http://getglimpse.com/">i1234</a></li></ul></div></div>
+                                <strong>Object:</strong>
+                                <pre class="object">{
+    "summary" : "Incremental release designed to provide an update to some of the core plugins.",
+    "items" : [ {
+            "priority" : "1",
+            "summary" : "*Example* :  You can have global issues that aren't grouped to a section"
+        } ],
+    "sections" : [ {
+            "items" : [ {
+                    "priority" : "3",
+                    "categories" : [ "New" ],
+                    "summary" : "*Release Checker* :  Now gives you a breakdown of exactly what you are missing."
+                }, {
+                    "priority" : "2",
+                    "categories" : [ "New" ],
+                    "summary" : "*Structured Layout* :  An alternative layout engine that allows developers to control layout."
+                } ],
+            "name" : "System ",
+            "icon" : "http : //getglimpse.com/release/icon/core.png",
+            "summary" : "This description is specific to system section."
+        }, {
+            "items" : [ {
+                    "priority" : "1",
+                    "categories" : [ "Changed" ],
+                    "summary" : "*Timeline* :  Comes with an additional grid view to show the same data."
+                }, {
+                    "priority" : "1",
+                    "taskId" : "i1234",
+                    "teskLink" : "http : //getglimpse.com",
+                    "categories" : [ "Fix" ],
+                    "summary" : "*Ajax* :  Fix that crashed poll in Chrome and IE due to log/trace statement."
+                } ],
+            "name" : "Plugin ",
+            "icon" : "http : //getglimpse.com/release/icon/mvc.png",
+            "summary" : "This description is specific to plugin section."
+        } ]
+}</pre>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div> 
+            <div>
+                <input name="menu-root-radio" class="menu-root-radio" id="Editor" type="radio">
+                <div class="section-editor">
+                    <a id="Editor"></a>
+                    <h2>Live Editor</h2> 
+                    <div class="section-editor">
+                        <p>Feel free to play around with some samples and see how things are put together.</p> 
+                        <textarea class="editor" style="height:180px;">Incremental release designed to provide an update to some of the core plugins.
+
+ - Release Checker: Now gives you a breakdown of exactly what you are missing. +New
+ - Structured Layout: An alternative layout engine that allows developers to control layout. +New
+ - Timeline: Comes with an additional grid view to show the same data. +Changed
+ - Ajax: Fix that crashed poll in Chrome and IE due to log/trace statement. +Fix</textarea>
+                        <div class="center">
+                            <button class="execute">Parse!</button>
+                        </div>
+                        <div class="result-container" style="display: block;">
+                            <strong>Result:</strong>
+                            <div class="result"><div>Incremental release designed to provide an update to some of the core plugins.<ul><li>{New}Release Checker: Now gives you a breakdown of exactly what you are missing.</li><li>{New}Structured Layout: An alternative layout engine that allows developers to control layout.</li><li>{Changed}Timeline: Comes with an additional grid view to show the same data.</li><li>{Fix}Ajax: Fix that crashed poll in Chrome and IE due to log/trace statement.</li></ul></div></div>
+                            <strong>Object:</strong>
+                            <pre class="object">{
+    "summary" : "Incremental release designed to provide an update to some of the core plugins.",
+    "items" : [ {
+            "categories" : [ "New" ],
+            "summary" : "Release Checker :  Now gives you a breakdown of exactly what you are missing."
+        }, {
+            "categories" : [ "New" ],
+            "summary" : "Structured Layout :  An alternative layout engine that allows developers to control layout."
+        }, {
+            "categories" : [ "Changed" ],
+            "summary" : "Timeline :  Comes with an additional grid view to show the same data."
+        }, {
+            "categories" : [ "Fix" ],
+            "summary" : "Ajax :  Fix that crashed poll in Chrome and IE due to log/trace statement."
+        } ]
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div> 
+                <input name="menu-root-radio" class="menu-root-radio" id="MicroFormat" type="radio">
+                <div class="section-micro-format">
+                    <a id="MicroFormat"></a>
+                    <h2>Micro Format</h2>
+
+                    Yet to come.
+
+                </div>
+            </div> 
+            <div>
+                <input name="menu-root-radio" class="menu-root-radio" id="Tools" type="radio">
+                <div class="section-tools">
+                    <a id="Tools"></a>
+                    <h2>Tools</h2>
+
+                    Here are a list of tools based on Semantic Release Notes:
+                    <ul>
+                      <li><a href="https://github.com/jakeginnivan/gitreleasenotes">Git Release Notes</a> by Jake Ginnivan<br>
+                        Utility which makes it really easy to generate semantic release notes for your Git project. Works with GitHub, Jira and YouTrack.</li>
+                      <li><a href="https://github.com/laedit/SemanticReleaseNotesParser">Semantic Release Notes Parser</a> by Jérémie Bertrand<br>
+                        C# parser / formatter of Semantic Release Notes, can be used to parse a semantic release notes and to format it to a markdown or html file or environment variable, for use on build sever.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>  
+        <footer>
+            <div class="footer-inner">
+                Copyright © 2013<br> Anthony van der Hoorn &amp; Nik Molnar
+            </div>
+        </footer>
+    </div>
+
+
+    <script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script><script src="./Semantic Release Notes_files/jquery.min.js.download"></script>
+    <script>window.jQuery || document.write('<script type="text/htmlpreview" src="js/libs/jquery-1.7.1.min.js"><\/script>')</script> 
+    <script type="text/htmlpreview" src="./Semantic Release Notes_files/script.js.download"></script> 
+<script>
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26457179-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<script src="./Semantic Release Notes_files/htmlpreview.min.js.download"></script><script>HTMLPreview.replaceAssets();</script><script src="./Semantic Release Notes_files/yql"></script><style>/* HTML5 Boilerplate  */
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
+audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
+audio:not([controls]) { display: none; }
+[hidden] { display: none; }
+
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+html, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body { margin: 0; font-size: 1em; line-height: 1.4; }
+
+a { color: #00e; }
+a:visited { color: #551a8b; }
+a:hover { color: #06e; }
+a:focus { outline: thin dotted; }
+a:hover, a:active { outline: 0; }
+abbr[title] { border-bottom: 1px dotted; }
+b, strong { font-weight: bold; }
+blockquote { margin: 1em 40px; }
+dfn { font-style: italic; }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+ins { background: #ff9; color: #000; text-decoration: none; }
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+pre, code, kbd, samp { font-family: monospace, serif; _font-family: 'courier new', monospace; font-size: 1em; }
+pre { white-space: pre; overflow-x: auto; overflow-y: hidden; }
+
+q { quotes: none; }
+q:before, q:after { content: ""; content: none; }
+small { font-size: 85%; }
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+dd { margin: 0 0 0 40px; }
+nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+svg:not(:root) { overflow: hidden; }
+figure { margin: 0; }
+
+form { margin: 0; }
+fieldset { border: 0; margin: 0; padding: 0; }
+
+label { cursor: pointer; }
+legend { border: 0; *margin-left: -7px; padding: 0; white-space: normal; }
+button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
+button, input { line-height: normal; }
+button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; *overflow: visible; }
+button[disabled], input[disabled] { cursor: default; }
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding: 0; *width: 13px; *height: 13px; }
+input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
+input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+textarea { overflow: auto; vertical-align: top; resize: vertical; }
+input:valid, textarea:valid {  }
+input:invalid, textarea:invalid { background-color: #f0dddd; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+.center { text-align: center; }
+
+.chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
+
+/* Button */
+.button, button, input[type="submit"], input[type="reset"], input[type="button"] { background: #eee linear-gradient(top, rgba(255,255,255,.2) 0%,rgba(0,0,0,.2) 100%); background: #eee -moz-linear-gradient(top, rgba(255,255,255,.2) 0%, rgba(0,0,0,.2) 100%); background: #eee -ms-linear-gradient(top, rgba(255,255,255,.2) 0%,rgba(0,0,0,.2) 100%); background: #eee -o-linear-gradient(top, rgba(255,255,255,.2) 0%,rgba(0,0,0,.2) 100%); background: #eee -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,.2)), color-stop(100%,rgba(0,0,0,.2))); background: #eee -webkit-linear-gradient(top, rgba(255,255,255,.2) 0%,rgba(0,0,0,.2) 100%); background: #eee; border: 1px solid #aaa; border-left: 1px solid #ccc; border-radius: 3px; border-top: 1px solid #ccc; color: #444; cursor: pointer; display: inline-block; font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; font-weight: bold; line-height: normal; margin-bottom: 20px; moz-border-radius: 3px; padding: 4px 12px; padding: 8px 10px; text-decoration: none; text-shadow: 0 1px rgba(255, 255, 255, .75); webkit-border-radius: 3px; }
+.button:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover { background: #ddd linear-gradient(top, rgba(255,255,255,.3) 0%,rgba(0,0,0,.3) 100%); background: #ddd -moz-linear-gradient(top, rgba(255,255,255,.3) 0%, rgba(0,0,0,.3) 100%); background: #ddd -ms-linear-gradient(top, rgba(255,255,255,.3) 0%,rgba(0,0,0,.3) 100%); background: #ddd -o-linear-gradient(top, rgba(255,255,255,.3) 0%,rgba(0,0,0,.3) 100%); background: #ddd -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,.3)), color-stop(100%,rgba(0,0,0,.3))); background: #ddd -webkit-linear-gradient(top, rgba(255,255,255,.3) 0%,rgba(0,0,0,.3) 100%); background: #ddd; border: 1px solid #888; border-left: 1px solid #aaa; border-top: 1px solid #aaa; color: #222; }
+.button:active, button:active, input[type="submit"]:active, input[type="reset"]:active, input[type="button"]:active { background: #ccc linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); background: #ccc -moz-linear-gradient(top, rgba(255,255,255,.35) 0%, rgba(10,10,10,.4) 100%); background: #ccc -ms-linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); background: #ccc -o-linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); background: #ccc -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,.35)), color-stop(100%,rgba(10,10,10,.4))); background: #ccc -webkit-linear-gradient(top, rgba(255,255,255,.35) 0%,rgba(10,10,10,.4) 100%); background: #ccc; border: 1px solid #666; }
+.button.full-width, button.full-width, input[type="submit"].full-width, input[type="reset"].full-width, input[type="button"].full-width { padding-left: 0 !important; padding-right: 0 !important; text-align: center; width: 100%; }
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+
+/* Tabs */
+ul.tabs { border-bottom: solid 1px #ddd; display: block; margin: 0 0 20px 0; padding: 0; }
+ul.tabs li { display: block; float: left; height: 30px; margin-bottom: 0; padding: 0; width: auto; }
+ul.tabs li a { background: #f5f5f5; border: solid 1px #ddd; border-width: 1px 1px 0 0; display: block; height: 29px; line-height: 30px; margin: 0; padding: 0px 20px; text-decoration: none; width: auto; cursor: pointer; }
+ul.tabs li a.active { background: #fff; border-left-width: 1px; border-top-left-radius: 2px; border-top-right-radius: 2px; color: #111; height: 30px; margin: 0 0 0 -1px; moz-border-radius-topleft: 2px; moz-border-radius-topright: 2px; padding-top: 4px; position: relative; top: -4px; webkit-border-top-left-radius: 2px; webkit-border-top-right-radius: 2px; cursor: default; }
+ul.tabs li:first-child a.active { margin-left: 0; }
+ul.tabs li:first-child a { border-top-left-radius: 2px; border-width: 1px 1px 0 1px; moz-border-radius-topleft: 2px; webkit-border-top-left-radius: 2px; }
+ul.tabs li:last-child a { border-top-right-radius: 2px; moz-border-radius-topright: 2px; webkit-border-top-right-radius: 2px; }
+ul.tabs-content { display: block; margin: 0; padding: 0; }
+ul.tabs-content > li { display: none; }
+ul.tabs-content > li.active { display: block; }
+ul.tabs:before, ul.tabs:after { content: '\0020'; display: block; height: 0; overflow: hidden; visibility: hidden; width: 0; }
+ul.tabs:after { clear: both; }
+ul.tabs { zoom: 1; }
+
+/* Forms */
+input[type="text"], input[type="password"], input[type="email"], textarea, select { background: #fff; border: 1px solid #ccc; border-radius: 2px; color: #777; display: block; font: 13px "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; margin-bottom: 20px; max-width: 100%; moz-border-radius: 2px; outline: none; padding: 6px 4px; webkit-border-radius: 2px; width: 210px; }
+select { padding: 0; }
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, textarea:focus { border: 1px solid #aaa; box-shadow: 0 0 3px rgba(0,0,0,.2); color: #444; moz-box-shadow: 0 0 3px rgba(0,0,0,.2); webkit-box-shadow: 0 0 3px rgba(0,0,0,.2); }
+textarea { min-height: 60px; }
+select { width: 220px; }
+input[type="checkbox"] { display: inline; }
+
+/* Headings */
+h1 { font-family:"Gill Sans", "Gill Sans Std", "Gill Sans MT", Georgia, serif;font-size:2em;line-height:1.5em;text-align:left;font-weight:400;margin:0 0 1.25em; }
+h2 { font-family:"Gill Sans", "Gill Sans Std", "Gill Sans MT", Verdana, "Bitstream Vera Sans", sans-serif;font-size:1.3em;text-align:left;font-weight:400;line-height:1.8em;letter-spacing:.2em;text-transform:uppercase;margin:1em 0 1em; }
+h2 + h3 { margin-top:1.5em; }
+h3 { font-family:"Gill Sans", "Gill Sans Std", "Gill Sans MT", Verdana, "Bitstream Vera Sans", sans-serif;font-size:1.1em;text-align:left;font-weight:400;line-height:1.8em;letter-spacing:.2em;margin-bottom:1.4em;margin-top:3em;text-transform:uppercase; }
+h4, h5, h6 { font-family:Verdana, "Bitstream Vera Sans", sans-serif;font-size:1em;text-align:left;font-weight:700;line-height:1.8em;margin:2em 0 0; }
+h1 + h2, h6 + h2 { margin-top:2em; }
+p + h3, pre + h3 { margin-top:4em; }
+.light { color: #777; }
+
+/* Site */
+body { margin-top: 0; padding: 50px 0 0 0; font-family: Verdana, "Bitstream Vera Sans", sans-serif; line-height: 1.8em; text-align: left; font-size: 11px; color: #4A4A4A; }
+.wrapper { width: 990px; margin: 0 auto; }
+.box { width: 720px; float: right; }
+.box-main { padding-bottom: 50px; }
+header { width: 270px; float: left; position: fixed; letter-spacing: 2px; text-align: right; }
+footer { width: 270px; float: left; position: fixed; bottom: 20px; text-align: right; color: #AAA; } 
+        
+a, a:visited, a:link { color: #4A4A4A; }
+a:hover { color: black; text-decoration: none; background-color: #D1D1D1; }
+
+.author { margin: 0 0 5em; }
+.author strong { font-size: 1em; font-weight: normal; text-transform: uppercase; }
+
+.header-inner, .footer-inner { margin-right: 40px; }
+.header-inner li { list-style: none; text-transform: uppercase; margin: 0 0 1em 0; padding: 0; }
+.header-inner a, .header-inner a:visited, .header-inner a:link { color: black; text-decoration: none; }
+
+.code, .result, .object { font-size: 11px; border: 1px dashed #777; padding: 1em; width: 100%; margin: 1em 0px; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.code { background-color: #EEE; }
+.result { background-color: #EBECFF; }
+.object { background-color: #FFFBEB; }
+
+.result h1 { margin-bottom: 0.5em; }
+
+ul.srn-priorities { list-style: none; padding-left: 20px; }
+ul.srn-priorities > li:before { content: attr(srn-priority) '.'; padding-right: 7px; }
+
+.editor { width: 100%; height: 100px; }
+.execute { font-size: 1.5em; padding-left: 3em; padding-right: 3em; }
+.result-container { display: none; }
+
+.menu-root-radio { display:none; }
+.menu-root-radio ~ div { display:none; }
+.menu-root-radio:checked ~ div { display:block; }
+
+@media only screen and (max-width: 990px) {
+    .wrapper { width:95%; margin: 0 auto; }
+    .box, header, footer { width: 100%; float: none; position: relative; }
+    .author { margin-bottom: 1em; }
+    .header-inner, .footer-inner { margin: 0px; }
+    .header-inner ul { text-align: center; padding:0; }
+    .header-inner li { display: inline-block; margin:0 1em; }
+} 
+
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; *line-height: 0; }
+.ir br { display: none; }
+.hidden { display: none !important; visibility: hidden; }
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+.invisible { visibility: hidden; }
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { *zoom: 1; }
+
+@media print {
+  * { background: transparent !important; color: black !important; box-shadow:none !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; } 
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; } 
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; } 
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}</style><script src="./Semantic Release Notes_files/jquery.min.js.download"></script><script>window.jQuery || document.write('<script type="text/htmlpreview" src="js/libs/jquery-1.7.1.min.js"><\/script>')</script><script src="./Semantic Release Notes_files/yql(1)"></script><script>/* Author:
+
+*/
+
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
+
+if (typeof String.prototype.titleize !== 'function') {
+    String.prototype.titleize = function() {
+      var words = this.split(' ')
+      var array = []
+      for (var i=0; i<words.length; ++i) {
+        array.push(words[i].charAt(0).toUpperCase() + words[i].toLowerCase().slice(1))
+      }
+      return array.join(' ')
+    };
+}
+
+var processSyntax = (function () {
+    var linkProcessor = {
+            pattern : /\[\[(\S+)\]\[(\S+)\]\]/i,
+            process : function (input, obj) {
+                var match =  this.pattern.exec(input);
+                        
+                if (match) {
+                    if ($.isArray(obj)) {
+                        obj.push(match[1]);
+                        obj.push(match[2]);
+                    }
+                    else
+                        obj[match[1]] = match[2];
+                }
+                        
+                return obj;
+            }
+        },
+        lineProcessor = {
+            options : [{ 
+                pattern : /^# ([\w\s*]*)/i,
+                test : function (input) {
+                    return this.pattern.test(input);
+                },
+                process : function (obj, input) {
+                    var title = this.pattern.exec(input),
+                        links = linkProcessor.process(input, {}),
+                        feature = { items : [] };
+                            
+                    feature.name = title[1];
+                    if (links.icon)
+                        feature.icon = links.icon;
+                            
+                    // Store results 
+                    if (!obj.sections)
+                        obj.sections = []; 
+                    obj.sections.push(feature);
+                }
+            },
+            {
+                pattern : /^ [\-\+\*]|([123])\. /i, 
+                categoryPattern : /\+([\w-]+)/i,
+                test : function (input) {
+                    return this.pattern.test(input);
+                },
+                process : function (obj, input) {
+                    var priority = this.pattern.exec(input),
+                        links = linkProcessor.process(input, []),
+                        item = {};
+                            
+                    if (priority && !isNaN(priority[1])) 
+                        item.priority =  priority[1]; 
+                    input = input.replace(this.pattern, '');
+                    
+                    if (links.length > 0) {
+                        item.taskId = links[0];
+                        item.teskLink = links[1];
+                        input = input.replace(linkProcessor.pattern, '').trim();
+                    }
+                    
+                    // handle categories
+                    
+                    var category;
+                    while(category = this.categoryPattern.exec(input)) {
+                        if(!item.categories) {
+                            item.categories = [];
+                        }
+                        item.categories.push(category[1].replace('-', ' ').titleize());
+                        var replacement = category[1];
+                        if(input.endsWith(category[1])) {
+                            replacement = '';
+                        }
+                        input = input.replace(this.categoryPattern, replacement);
+                    }
+                    
+                    item.summary = input.trim();
+
+                    // Store results 
+                    if (!obj.sections) {
+                        if (!obj.items)
+                            obj.items = [];
+                        obj.items.push(item);
+                    }
+                    else 
+                        obj.sections[obj.sections.length - 1].items.push(item); 
+                }
+            }],
+            primary : {
+                pattern : /^[a-zA-Z0-9]/i,
+                process : function (obj, input, nextInput) { 
+                    var item = obj;
+                    if (obj.sections) 
+                        item = obj.sections[obj.sections.length - 1];
+
+                    if (!item.summary)
+                        item.summary = ''; 
+
+                    input = input.trim();
+                    if (input === '' && nextInput && this.pattern.test(nextInput))
+                        input = '\n\n'; 
+                            
+                    item.summary += input; 
+                }
+            }
+        },
+        process = function (raw) {
+            var result = {},
+                rawLines = raw.split('\n');
+
+            for (var rawLineIndex in rawLines) {
+                var rawLine = rawLines[rawLineIndex],
+                    matched = false;
+
+                // Process the line
+                for (var optionIndex in lineProcessor.options) {
+                    var option = lineProcessor.options[optionIndex];
+                            
+                    if (option.test(rawLine)) {
+                        option.process(result, rawLine);
+                        matched = true;
+                    }
+                }
+                if (!matched)
+                    lineProcessor.primary.process(result, rawLine, rawLines[+rawLineIndex + 1]);
+            }
+            
+            return result;
+        };
+             
+    return {
+        process : process  
+    };
+})();
+      
+var formatSyntax = (function () {
+    var formatHtmlParser = [
+            {
+                pattern : /\*\*([\S ]+)\*\*|\_\_([\S ]+)\_\_/ig,
+                process : function(val) {
+                    return val.replace(this.pattern, '<strong>$1$2</strong>');
+                }
+            },
+            {
+                pattern : /\_([\S ]+)\_|\*([\S ]+)\*/ig,
+                process : function(val) {
+                    return val.replace(this.pattern, '<em>$1$2</em>');
+                }
+            },
+            {
+                pattern : /\`([\S ]+)\`/ig,
+                process : function(val) {
+                    return val.replace(this.pattern, '<code>$1</code>');
+                }
+            },
+            {
+                pattern : /\[([\S ]+)\]\(([\S ]+)\)/ig,
+                process : function(val) {
+                    return val.replace(this.pattern, '<a href="$2">$1</a>');
+                }
+            }
+        ],
+        processString = function (val) {
+            if (val) {
+                for (var fomatterIndex in formatHtmlParser) 
+                    val = formatHtmlParser[fomatterIndex].process(val);
+                val = val.replace(/\n/g, '<br />');
+            }
+            else
+                val = '';
+            return val;
+        },
+        processList = function (items) { 
+            var result = '',
+                hasPriorities = false;
+
+            for (var itemIndex in items) {
+                var item = items[itemIndex],
+                    attr = '';
+                    
+                if (item.priority) {
+                    attr = ' srn-priority="' + item.priority + '"';
+                    hasPriorities = true;
+                }
+                result += '<li' + attr + '>';
+                if(item.categories) {
+                    result += '{';
+                    for(var categoryIndex in item.categories) {
+                        if(categoryIndex > 0) {
+                            result += ', ';
+                        }
+                        result += item.categories[categoryIndex];
+                    }
+                    result += '}';
+                }
+                
+                var summary = item.summary;
+                for (var fomatterIndex in formatHtmlParser) 
+                    summary = formatHtmlParser[fomatterIndex].process(summary);
+                result += summary;
+                    
+                if (item.taskId)
+                    result += ' <a href="' + item.teskLink + '">' + item.taskId + '</a>';
+                result += '</li>';
+            }
+
+            result =  '<ul' + (hasPriorities ? ' class="srn-priorities"' : '') + '>' + result + '</ul>';
+                    
+            return result;
+        },
+        process = function (val) {
+            var result = '';
+              
+            result += '<div>' + processString(val.summary) + processList(val.items) + '</div>';
+            for (var featureIndex in val.sections) {
+                var feature = val.sections[featureIndex];
+                
+                result += '<div><h1>' + feature.name + '</h1>' + processString(feature.summary) + processList(feature.items) + '</div>';
+            }
+
+            return result; 
+        };
+            
+    return {
+        process : process
+    };
+})();
+      
+var formatJson = (function () {
+    var process = function(val) {
+        var result = '',
+            stack = [],
+            stackTop = { indent: '' },
+            strLen = val.length,
+            char = '',
+            indentStr = '    ',
+            newLine = '\r\n';
+        
+        for (var i = 0; i < strLen; i++) {
+            char = val[i];
+            
+            if (char == '{' || char == '[') {
+                stack.push(stackTop = {
+                    isArray: char == '[',
+                    isOutterArray: char == '[' && val[i + 1] == '[',
+                    indent: stackTop.indent + (!stackTop.isOutterArray ? indentStr : '')
+                }); 
+            }
+            
+            if (char == '}' || (char == ']' && stackTop.isOutterArray))
+                result += newLine + (stack.length > 1 ? stack[stack.length - 2].indent : '');
+             
+            result += ((char == ']' && !stackTop.isOutterArray) || char == ':' ? ' ' : '') + char + (char == '[' || char == ':' || (char == ',' && stackTop.isArray) ? ' ' : '');
+             
+            if ((char == ',' && (!stackTop.isArray || stackTop.isOutterArray)) || char == '{' || (char == '[' && stackTop.isOutterArray))
+                result += newLine + stackTop.indent;
+            
+            if (char == '}' || char == ']') {
+                stack.pop();
+                stackTop = stack[stack.length - 1];
+            } 
+        }
+
+        return result;
+    };
+            
+    return {
+        process : process
+    };
+})();
+  
+var process = function(scope, text) { 
+    var data = processSyntax.process(text),
+        stringData = formatJson.process(JSON.stringify(data)),
+        stringHtml = formatSyntax.process(data);
+
+    scope.find('.result').html(stringHtml);
+    scope.find('.object').html(stringData); 
+};
+
+var navigate = function (evt) {
+    $(location.hash).attr('checked', 'checked');
+};
+
+$(function() {
+
+    if (location.hash)
+        navigate();
+
+    $(window).on('hashchange', navigate);
+
+    $('.code').each(function(){
+        var scope = $(this).closest('.container'),
+            text = scope.find('.code').text();
+        process(scope, text);
+    });
+
+    $('.tabs a').click(function () {
+        var item = $(this),
+            index = item.attr('data-tab'),
+            ul = item.closest('ul'),
+            ulNext = ul.next();
+
+        ul.find('.active').removeClass('active');
+        ulNext.find('.active').removeClass('active');
+
+        ul.find('a[data-tab="' + index + '"]').addClass('active');
+        ulNext.find('li[data-tab="' + index + '"]').addClass('active'); 
+    });
+
+    var execute = function() {
+        var scope = $('.execute').closest('.section-editor'),
+            text = scope.find('.editor').val();
+        process(scope, text);
+        scope.find('.result-container').show();
+    };
+    $('.execute').click(function() {
+        execute();
+    });
+    execute();
+});</script><script>
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26457179-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</body></html>
