@@ -136,30 +136,10 @@ GetLastError.argtypes = []
 GetLastError.restype = ctypes.c_int
 
 def make_mouse_move(x,y):
-    ip = INPUT()
-    ip.type = INPUT_MOUSE
-    
-    mi = MOUSEINPUT()
-    mi.dx = x
-    mi.dy = y
-    mi.mouseData = 0
-    mi.time = 0
-    mi.dwFlags=(MOUSEEVENTF_MOVE) | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK
-    ip.ip.mi = mi
-    return ip
+    return _mouse_event(x, y, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK)
 
 def make_mouse_left_click(dwFlags):
-    ip = INPUT()
-    ip.type = INPUT_MOUSE
-    
-    mi = MOUSEINPUT()
-    mi.dx = 0
-    mi.dy = 0
-    mi.mouseData = 0
-    mi.time = 0
-    mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | dwFlags
-    ip.ip.mi = mi
-    return ip
+    return _mouse_event(0, 0, MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | dwFlags)
 
 import win32api, math
 SCREEN_X = win32api.GetSystemMetrics(78)
@@ -171,8 +151,44 @@ def norm(x, y):
 def denorm(x,y):
     return math.floor((x / 65535) * SCREEN_X), math.floor((y / 65536) * SCREEN_Y)
 
+def _mouse_event(x, y, flags):
+    x = int(x)
+    y = int(y)
+    ip = INPUT()
+    ip.type = INPUT_MOUSE
+    mi = MOUSEINPUT()
+    mi.dx = x
+    mi.dy = y
+    mi.mouseData = mi.time = 0
+    mi.dwFlags = flags
+    ip.ip.mi = mi
+    return ip
+
+def drag(x1, y1, x2, y2, delay=0.01):
+    ip1 = _mouse_event(x1, y1, MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN)
+    ip2 = _mouse_event(x2, y2, MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_MOVE)
+    ip3 = _mouse_event(0, 0, MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_LEFTUP)
+    rv = 0
+    rv += send_inputs(ip1)
+    sleep(delay)
+    rv += send_inputs(ip2)
+    sleep(delay)
+    rv += send_inputs(ip3)
+    sleep(delay)
+    return rv
+    
 def left_click(x,y):
     
+    ip1 = _mouse_event(x, y, MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN)
+    
+    ip2 = _mouse_event(0, 0, MOUSEEVENTF_LEFTUP)
+    
+    sz = ctypes.sizeof(ip1)
+    arr = (INPUT * 2)(ip1, ip2)
+    rv = SendInput(2, arr, sz)
+    return rv
+    
+def _depr_left_click(x,y):
     ip1 = INPUT()
     ip1.type = INPUT_MOUSE
     
@@ -198,10 +214,7 @@ def left_click(x,y):
     
     sz = ctypes.sizeof(ip1)
     arr = (INPUT * 2)(ip1, ip2)
-    
-#     ox,oy = get_pos()
     rv = SendInput(2, arr, sz)
-#     mouse_move(ox, oy)
     return rv
 
 def send_keyboard_input(keycode, scan_code=0):
