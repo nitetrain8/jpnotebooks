@@ -1,88 +1,5 @@
 
-# coding: utf-8
-
-# In[29]:
-
-
 import re
-
-_test_data_raw = """*+Background:+*
-Agitation refers to the mixing of vessel contents using a vertical wheel impeller. 
-
-*+URS3646+* 
-* *+URS3646.1:+* The system will control agitation using automatic and manual control, and be able to turn agitation off. 
-** Point 1
-** Point 2
-* *+URS3646.2:+* Automatic control will use speed as a set point to control PV. 
-* *+URS3646.3:+* Manual control will provide a constant controller output regardless of PV. 
-* *+URS3646.4:+* The system will use appropriate constraints to coerce outputs within appropriate operating limits. 
-* *+URS3646.5:+* The system will detect agitation speed PV based on actual agitation speed as detected by a hardware sensor.
-* *+URS3646.6:+* The system will report agitation speed PV in units of revolutions per minute (RPM)
-* *+URS3646.7:+* The system will provide a standard UI allowing an operator access to system controls
-* *+URS3646.8:+* The system will attempt to detect and recover from failures or abnormal operation. 
-
-*+FRS3646+* Agitation Control [URS3646]
-* Note: All system variables in the following items will be located under the category "Agitation" unless specified otherwise. 
-* *FRS3646.1:* Controller output will be determined by whether the bioreactor is configured as an AirDrive or MagDrive system. [URS3646.1]
-** *FRS3646.1.1:* (AirDrive) The controller will output a Main Gas flow rate request. Ref FRS3654. [URS3646.1]
-** *FRS3646.1.2:* (MagDrive) the controller will output motor duty as a percentage of full scale. [URS3646.1]
-** Note: For both configurations, output modules will be used as necessary to translate requests into electronic signals. 
-* *FRS3646.2:* Agitation speed (a.k.a "RPM") will be detected based on a hardware sensor and used as the Process Value (PV). [URS3646.5]
-** *FRS3646.2.1:* RPM detection will use a Hall Effect sensor to detect the passing of sensor magnets on the mixing impeller. [URS3646.5]
-** *FRS3646.2.2:* The time between magnets passing will be used to infer the agitation speed based on the number of magnets. [URS3646.6]
-** *FRS3646.2.3:* The number of magnets on the impeller will be configurable via System Variable "Number of Magnets". [URS3646.5]
-** *FRS3646.2.4:* The number of intervals to average will be configurable via System Variable "Samples to Average". [URS3646.5]
-** *FRS3646.2.5:* A measured PV will be coerced to 0 if the raw value is less than System Variable "Minimum (RPM)". [URS3646.6]
-** Note: the magnets on the impeller will be assumed to be evenly spaced. 
-* *FRS3646.3:* HMI [URS3646.7]
-** *FRS3646.3.1:* Users will be able to select one of three modes: Auto, Manual, or Off. [URS3646.7]
-** *FRS3646.3.2:* The current PV, SP, and mode will be displayed to the user with appropriate units. [URS3646.7]
-** *FRS3646.3.3:* Interlock or broken status will be displayed to the user. [URS3646.7]
-* *FRS3646.4:* Auto Mode Control [URS3646.2]
-** Note: Tuning is beyond the scope of this FRS. Understanding of a PID controller is required to understand PID requirements. 
-** *FRS3646.4.1:* Users will be able to select a Set Point (SP) as an RPM target. [URS3646.2]
-** *FRS3646.4.2:* A standard PID controller will be used to seek SP based on the current PV. [URS3646.2]
-** *FRS3646.4.3:* The PID Controller will use the following System Variables for standard PID input parameters, under the Agitation category: [URS3646.2]
-*** *FRS3646.4.3.1:* (MagDrive) P-Gain: "P Gain (%/RPM)" [URS3646.2]
-*** *FRS3646.4.3.2:* (AirDrive) P-Gain: "P Gain (LPM/RPM)" [URS3646.2]
-*** *FRS3646.4.3.3:* I-Time: "I Time (min)" [URS3646.2]
-*** *FRS3646.4.3.4:* D-Time: "D Time (min)" [URS3646.2]
-*** *FRS3646.4.3.5:* α: "Alpha" [URS3646.2]
-*** *FRS3646.4.3.6:* β: "Beta" [URS3646.2]
-*** *FRS3646.4.3.7:* γ: "Gamma" [URS3646.2]
-*** *FRS3646.4.3.8:* Linearity: "Linearity" [URS3646.2]
-** *FRS3646.4.4:* (AirDrive) Output will not be greater than System Variable "Gas Auto Max (LPM)". [URS3646.2]
-** *FRS3646.4.5:* (AirDrive) Output will not be less than System Variable "Gas Auto Min (LPM)" [URS3646.2]
-** *FRS3646.4.6:* (AirDrive) When PV is 0, the controller will not output more than System Variable "Gas Auto Max Startup (LPM)", unless this would violate the "Gas Auto Max (LPM)" or "Gas Auto Min (LPM)" settings. [URS3646.2]
-** *FRS3646.4.7:* (MagDrive) Output will not be greater than System Variable "Power Auto Max (%)". [URS3646.2]
-** *FRS3646.4.8:* (MagDrive) Output will not be less than System Variable "Power Auto Min (%)". [URS3646.2]
-** *FRS3646.4.9:* (MagDrive) When PV is 0, the controller will not output more than System Variable "Auto Max Startup (%)", unless this would violate the "Power Auto Max (%)" or "Power Auto Min (%)" settings. [URS3646.2]
-** *FRS3646.4.10:* Pulse and Lookup Modes [URS3646.2]
-*** *FRS3646.4.10.1:* The controller will automatically transition from Auto Mode to Pulse Mode when the following conditions are met: [URS3646.2]
-**** *FRS3646.4.10.1.1:* Output is nonzero [URS3646.2]
-**** *FRS3646.4.10..2:* PV has been 0 for longer than the time specified by System Variable "Pulse Mode Timeout". [URS3646.8]
-**** *FRS3646.4.10.1.3:* PV has been 0 for less than the time specified by System Variable "Lookup Mode Timeout". [URS3646.2]
-*** *FRS3646.4.10.2:* While in pulse mode, output will alternate between zero and maximum allowed output every few seconds. [URS3646.2]
-*** *FRS3646.4.10.3:* The controller will automatically transition from Pulse Mode or Auto Mode to Lookup Mode when the following conditions are met: [URS3646.8]
-**** *FRS3646.4.10.3.1:* Output is nonzero [URS3646.8]
-**** *FRS3646.4.10.3.2:* PV has been 0 for longer than the time specified by System Variable "Lookup Mode Timeout". [URS3646.8]
-*** *FRS3646.4.10.4:* (AirDrive) While in lookup mode, the system will output as SP * (System Variable "Lookup Factor (LPM/RPM)"). [URS3646.8]
-*** *FRS3646.4.10.5:* (MagDrive) While in lookup mode, the system will output as SP * (System Variable "Lookup Factor (%/RPM)"). [URS3646.8]
-*** Note: If lookup timeout is equal or less than the pulse timeout, then the system will never enter pulse mode. 
-* *FRS3646.5:* Manual Mode Control [URS3646.3]
-** *FRS3646.5.1:* (AirDrive) Users will be able to select a gas flow rate in LPM as a target. [URS3646.3]
-** *FRS3646.5.2:* (MagDrive) Users will be able to select a power output in % as a target. [URS3646.3]
-** *FRS3646.5.3:* The system will output the user's request when not limited by interlocks, settings, or other specified circumstances. [URS3646.3]
-** *FRS3646.5.4:* (AirDrive) Output will not be greater than System Variable "Gas Manual Max (LPM)". [URS3646.4]
-** *FRS3646.5.5:* (MagDrive) Output will not be greater than System Variable "Power Manual Max (%)". [URS3646.5]
-* *FRS3646.6:* Off Mode Control [URS3646.4]
-** *FRS3646.6.1:* (AirDrive) The controller will output no Main Gas request. [URS3646.4,URS3646.6]
-** *FRS3646.6.2:* (MagDrive) The controller will output no power request. [URS3646.4, URS3646.5]
-** *+FRS3646.7.1+* I'm a test item
-
-*+SDS3646+*
-* *+SDS3646.1:+* I'm an item [FRS3646.6.2]
-* *+SDS3646.2:+* I'm another item [FRS3646.7.1]"""
 
 class Requirement():
     """ Mostly POD class designed 
@@ -93,10 +10,11 @@ class Requirement():
         self.obs = obs
         self.refs = set(refs)
         self.text = text
+        self._tag = typ + num
         if _notag:
             self.tag = ""
         else:
-            self.tag = typ + num
+            self.tag = self._tag
         
         self.parents = set()
         self.children = set()
@@ -108,6 +26,11 @@ class Requirement():
         tags.
         """
         return hash(self.tag)
+    
+    def __eq__(self, other):
+        if not isinstance(other, Requirement):
+            return NotImplemented
+        return self._tag == other._tag
     
     def childify(self):
         """ Entry point """
@@ -129,7 +52,7 @@ class Requirement():
                 yield from child._childify(path.copy())
                 
     def __repr__(self):
-        return ("%s('%s%s')"%(self.__class__.__name__, self.type, self.num))
+        return ("%s('%s', '%s', _notag=%s)"%(self.__class__.__name__, self.type, self.num, str(self.tag=="")))
                 
     def memfree(self):
         """ Free all references. 
@@ -140,6 +63,9 @@ class Requirement():
         self.children.clear()
         self.parents.clear()
 
+def _partial_sort(data, start, end, key, idx):
+    data[start:end] = sorted(data[start:end], key=lambda row: key(row[idx]))
+     
 def partial_sort(rows, idx=0, key=lambda x: x):
     """ Inner function to perform sequential sorting of
     a list of lists. 
@@ -165,20 +91,23 @@ def partial_sort(rows, idx=0, key=lambda x: x):
     from the list that is being used for the sort, not 
     the whole row. 
     """
-    if idx == 0:
+    if idx == 0 or len(rows) < 2:
         return rows.sort(key=lambda row: key(row[idx]))
     
     i = start = 0
     nrows = len(rows)
     refidx = idx - 1
-    while i < nrows:
-        val = first_val = rows[i][refidx]
+    first_val = rows[0][refidx]
+    while True:
         i += 1
-        while val == first_val and i < nrows:
-            val = rows[i][refidx]
-            i += 1
-        rows[start: i - 1] = sorted(rows[start:i - 1], key=lambda row: key(row[idx]))
-        start = i - 1
+        if i >= nrows:
+            _partial_sort(rows, start, i, key, idx)
+            break
+        val = rows[i][refidx]
+        if val != first_val:
+            _partial_sort(rows, start, i, key, idx)
+            start = i
+            first_val = rows[i][refidx]
 
 _req_types = [
     'URS',
@@ -191,7 +120,7 @@ _req_types = [
 
 def _make_regex_ctx(_types):
     """ Create regex specific to the given list of traceable tags """
-    item = "(%s)([\d\.]+)" % "|".join(_types)
+    item = r"(%s)([\d\.]+)" % "|".join(_types)
     match = re.compile(item).match
     line_item_match = re.compile(r"^\>?[\*]*\s*(-*)[\+\*]+(?:%s)\:?[\+\*]*\:?\s*(.*?)(-*)\s*$" % item).match
     ref_find = re.compile(item).findall
@@ -199,6 +128,8 @@ def _make_regex_ctx(_types):
 
 def _setparent(child, parent):
     """ Helper """
+    if child is None or parent is None:
+        return
     child.parents.add(parent)
     parent.children.add(child)
 
@@ -212,7 +143,7 @@ class RequirementExtracter():
     _RAW_LINE   = 1
     _REQ_RESULT = 2
     
-    def __init__(self, types=_req_types):
+    def __init__(self, types=tuple(_req_types)):
         self._types = types
         self._req_item, self._req_match, self._item_match, self._ref_find = _make_regex_ctx(types)
         self._bracket_find = re.compile(r"(.*?)\[(.*)\](.*)").findall
@@ -271,6 +202,8 @@ class RequirementExtracter():
         refs = set("".join(r) for r in refs)
         current.text = text
         current.refs = refs
+        if current.tag in refs:
+            raise ValueError("Duplicate tag found: '%s'"%current.tag)
         reqs[current.tag] = current
         data[current.type].append(current)
 
@@ -295,23 +228,49 @@ class RequirementExtracter():
         of scope here and become lost, leading to difficult to diagnose
         errors. 
         """
+        
         reqs = {}
         data = {}
         empty_parents = {}  # typ -> empty parent Requirement
         empty_children = {} # typ -> empty child Requirement
-        parent = Requirement("dummy_parent")
 
+        # build lists of parents and children in multiple passes to simplify
+        # the algorithm
+
+        parents = []
+        children = []
         for typ in self._types:
-            r = Requirement(typ, _notag=True)
-            _setparent(r, parent)
-            data[typ] = [r]
-            reqs['EMPTY_' + typ] = r
-            empty_parents[typ] = parent
-            parent = r
+            rp = Requirement(typ, _notag=True)
+            rc = Requirement(typ, _notag=True)
+            parents.append(rp)
+            children.append(rc)
 
-        for i in range(len(self._types) - 1):
-            empty_children[self._types[i]] = data[self._types[i + 1]][0]
-            
+        ll = len(self._types) - 1
+        for i, typ in enumerate(self._types):
+            data[typ] = [parents[i], children[i]]
+
+            # These get special key names so they can be 
+            # easily accessed later
+            key = "EMPTY_PARENT_" + typ
+            key2 = "EMPTY_CHILD_" + typ
+            reqs[key] = parents[i]
+            reqs[key2] = children[i]
+
+            parents[i].text = key
+            children[i].text = key2
+
+            # assign parent ref
+            if i < ll:
+                parents[i + 1].refs = {key}
+                children[i + 1].refs = {key2}
+                
+                # empty child map
+                empty_children[typ] = children[i + 1]  
+
+            # empty parent map
+            if i > 0:
+                empty_parents[typ] = parents[i - 1]
+
         return reqs, data, empty_parents, empty_children
 
     def _extract_frs_lines(self, lines, reqs, data):
@@ -353,8 +312,9 @@ class RequirementExtracter():
         This function doesn't skip the first item in the _types list, because a dummy
         parent is included in the empty_parents list. 
         """
+        t0 = self._types[0]
         for req in reqs.values():
-            if not req.refs:
+            if not req.refs and req.type != t0:
                 _setparent(req, empty_parents[req.type])
             for ref in req.refs:
                 parent = reqs.get(ref)
@@ -405,11 +365,11 @@ class RequirementExtracter():
         
         The sort key is a lambda that turns the dotted-number
         stored in the requirement object into a list of integers
-        that can be compared lexigraphically. 
+        that can be compared lexicographically. 
         
         "3.4.5" -> (3, 4, 5)
         
-        This is needed because comparing the strings lexigraphically
+        This is needed because comparing the strings lexicographically
         results in e.g. "3.10" is less than "3.2". 
         """
         if not rows:
@@ -419,9 +379,15 @@ class RequirementExtracter():
             partial_sort(rows, i, key=key)
             
     def _stringify_rows(self, rows):
+        """ Turn rows of requirement items into rows of strings. 
+        Filter out blank rows by verifying that each row has at 
+        least one non-empty string. 
+        """
         ret = []
         for row in rows:
-            ret.append([r.tag for r in row])
+            r = [r.tag for r in row]
+            if any(r):
+                ret.append(r)
         return ret
     
     def _extract_finish(self, reqs, data, empty_parents, empty_children):
@@ -463,7 +429,7 @@ class RequirementExtracter():
             self._extract_frs_lines(lines, reqs, data)
         return self._extract_finish(reqs, data, empty_parents, empty_children)
 
-
 if __name__ == '__main__':
+    from _itie_test_data_raw import _test_data_raw
     for row in RequirementExtracter(_req_types).extract_text(_test_data_raw):
         print(repr(row))
