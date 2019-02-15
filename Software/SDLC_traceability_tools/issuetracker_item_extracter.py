@@ -215,7 +215,7 @@ class RequirementExtracter():
     def _create_empties(self):
         """
         Create and pre-populate empty containers for a new run. 
-        This function creates an dummy empty parent to act as
+        This function creates a dummy empty parent to act as
         a parent for the first item in the _types list, which
         simplifies other algorithms in this class. 
         
@@ -374,7 +374,10 @@ class RequirementExtracter():
         """
         if not rows:
             return
-        key = lambda s: [int(n or 0) for n in s.num.split(".")]
+
+        # This key is a somewhat hacky way of ensuring that empty cells 
+        # [""] are sorted to the bottom of the list. 
+        key = lambda s: [int(n or 0) for n in s.num.split(".")] if s.num else [9999999999999]
         for i in range(len(self._types)):
             partial_sort(rows, i, key=key)
             
