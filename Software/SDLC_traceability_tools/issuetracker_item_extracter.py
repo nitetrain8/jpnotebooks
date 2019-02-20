@@ -1,8 +1,7 @@
-
 import re
 
-class Requirement():
-    """ Mostly POD class designed 
+class Reference():
+    """ Mostly POD class designed to hold data related to a requirement
     """
     def __init__(self, typ, num="", obs=False, refs=(), text="", _notag=False):
         self.type = typ
@@ -19,16 +18,23 @@ class Requirement():
         self.parents = set()
         self.children = set()
         
+    def copy(self):
+        new = self.__class__(self.type, self.num, self.obs, self.refs, self.text)
+        new.tag = self.tag
+        new.parents = self.parents.copy()
+        new.children = self.children.copy()
+        return new
+        
     def __hash__(self):
         """ Used when adding to the `parents` or `children` 
         sets of a different Requirement item, to guarantee
         non-uniqueness of two requirements with identical
         tags.
         """
-        return hash(self.tag)
+        return hash(self._tag)
     
     def __eq__(self, other):
-        if not isinstance(other, Requirement):
+        if not isinstance(other, Reference):
             return NotImplemented
         return self._tag == other._tag
     
@@ -64,7 +70,7 @@ class Requirement():
         self.parents.clear()
 
 def _partial_sort(data, start, end, key, idx):
-    data[start:end] = sorted(data[start:end], key=lambda row: key(row[idx]))
+    data[start:end] = sorted(data[start:end], key=key)
      
 def partial_sort(rows, idx=0, key=lambda x: x):
     """ Inner function to perform sequential sorting of
@@ -80,8 +86,8 @@ def partial_sort(rows, idx=0, key=lambda x: x):
     values of "1" found at idx - 1 = 0 in the list:
     
         [1, 2, 1]  <- block start
-        [1, 3, 1]     
-        [1, 4, 1]  <- block end
+        [1, 3, 5]     
+        [1, 4, 3]  <- block end
         [4, 5, 6]
         [5, 6, 7]
          ^
@@ -91,8 +97,10 @@ def partial_sort(rows, idx=0, key=lambda x: x):
     from the list that is being used for the sort, not 
     the whole row. 
     """
+    thekey = lambda row: key(row[idx])
+    
     if idx == 0 or len(rows) < 2:
-        return rows.sort(key=lambda row: key(row[idx]))
+        return rows.sort(key=thekey)
     
     i = start = 0
     nrows = len(rows)
@@ -101,11 +109,11 @@ def partial_sort(rows, idx=0, key=lambda x: x):
     while True:
         i += 1
         if i >= nrows:
-            _partial_sort(rows, start, i, key, idx)
+            _partial_sort(rows, start, i, thekey, idx)
             break
         val = rows[i][refidx]
         if val != first_val:
-            _partial_sort(rows, start, i, key, idx)
+            _partial_sort(rows, start, i, thekey, idx)
             start = i
             first_val = rows[i][refidx]
 
@@ -113,14 +121,23 @@ _req_types = [
     'URS',
     'FRS',
     'SDS',
-    'IQ',
-    'OQ',
-    'PQ'
 ]
+
+_test_types = [
+    'UNIT',
+    'USER',
+    'BETA'
+]
+
+
+__item_template = r"(%s)([\d\.]+)"
+
+def create_item_matcher(types):
+    return re.compile(__item_template % "|".join(types)).match
 
 def _make_regex_ctx(_types):
     """ Create regex specific to the given list of traceable tags """
-    item = r"(%s)([\d\.]+)" % "|".join(_types)
+    item = __item_template % "|".join(_types)
     match = re.compile(item).match
     line_item_match = re.compile(r"^\>?[\*]*\s*(-*)[\+\*]+(?:%s)\:?[\+\*]*\:?\s*(.*?)(-*)\s*$" % item).match
     ref_find = re.compile(item).findall
@@ -138,16 +155,23 @@ def _numfix(s):
     """ "3..4...5" -> "3.4.5" """
     return _numfix_sub(".", s)
 
-class RequirementExtracter():
+
+class IssuetrackerParser():
+    """ For parsing requirements from issuetracker
+    """
+    
     _EMPTY_LINE = 0
     _RAW_LINE   = 1
     _REQ_RESULT = 2
     
-    def __init__(self, types=tuple(_req_types)):
-        self._types = types
+    def __init__(self, types=tuple(_req_types + _test_types)):
         self._req_item, self._req_match, self._item_match, self._ref_find = _make_regex_ctx(types)
         self._bracket_find = re.compile(r"(.*?)\[(.*)\](.*)").findall
+        self._types = types
         
+    def get_types(self):
+        return self._types
+
     def _extract_refs(self, lines):
         """ Extract all references from the given line and return 
         a list of references and the line with references removed. 
@@ -165,12 +189,25 @@ class RequirementExtracter():
         if isinstance(lines, str): 
             lines = lines.split()
         for line in lines:
-            for before, bracket, after in self._bracket_find(line):
-                text.append(before)
-                text.append(after)
-                for typ, num in self._ref_find(bracket):
-                    num = _numfix(num)
-                    refs.append((typ, num))
+            results = self._bracket_find(line)
+            if not results:
+                text.append(line)
+            else:
+                for before, bracket, after in results:
+                    text.append(before)
+                    typnums = self._ref_find(bracket)
+                    if not typnums:
+                        text.append("[")
+                        text.append(bracket)
+                        text.append("]")
+                    else:
+                        for typ, num in self._ref_find(bracket):
+                            num = _numfix(num)
+                            refs.append((typ, num))
+                    text.append(after)
+            text.append("\n")
+        if text:
+            text.pop()  # last newline
         return refs, ''.join(text)
     
     def _get_result_for_line(self, line):
@@ -192,7 +229,7 @@ class RequirementExtracter():
         cancel = dash1 == dash2 and dash1 != ""
         return self._REQ_RESULT, type, num, text, cancel
     
-    def _current_finish(self, current, current_text, reqs, data):
+    def _current_finish(self, current, current_text, reqs):
         """ Compile the stored state for the current item and add
         it to the `reqs` and `data` structures. 
         """
@@ -202,83 +239,19 @@ class RequirementExtracter():
         refs = set("".join(r) for r in refs)
         current.text = text
         current.refs = refs
-        if current.tag in refs:
-            raise ValueError("Duplicate tag found: '%s'"%current.tag)
-        reqs[current.tag] = current
-        data[current.type].append(current)
+        reqs.append(current)
 
     def _current_append(self, current, current_text, text):
         if current is None:
             return
         current_text.append(text)
         
-    def _create_empties(self):
-        """
-        Create and pre-populate empty containers for a new run. 
-        This function creates a dummy empty parent to act as
-        a parent for the first item in the _types list, which
-        simplifies other algorithms in this class. 
-        
-        This trick doesn't work for children, because the dummy child would
-        always get pulled in by req.childify(). The dummy parent
-        does not appear because it is not added to either top-level
-        data structure. Note that this approach is incompatible with
-        the original Requirement class design which used a WeakSet
-        to contain parents, because this dummy parent would go out
-        of scope here and become lost, leading to difficult to diagnose
-        errors. 
-        """
-        
-        reqs = {}
-        data = {}
-        empty_parents = {}  # typ -> empty parent Requirement
-        empty_children = {} # typ -> empty child Requirement
-
-        # build lists of parents and children in multiple passes to simplify
-        # the algorithm
-
-        parents = []
-        children = []
-        for typ in self._types:
-            rp = Requirement(typ, _notag=True)
-            rc = Requirement(typ, _notag=True)
-            parents.append(rp)
-            children.append(rc)
-
-        ll = len(self._types) - 1
-        for i, typ in enumerate(self._types):
-            data[typ] = [parents[i], children[i]]
-
-            # These get special key names so they can be 
-            # easily accessed later
-            key = "EMPTY_PARENT_" + typ
-            key2 = "EMPTY_CHILD_" + typ
-            reqs[key] = parents[i]
-            reqs[key2] = children[i]
-
-            parents[i].text = key
-            children[i].text = key2
-
-            # assign parent ref
-            if i < ll:
-                parents[i + 1].refs = {key}
-                children[i + 1].refs = {key2}
-                
-                # empty child map
-                empty_children[typ] = children[i + 1]  
-
-            # empty parent map
-            if i > 0:
-                empty_parents[typ] = parents[i - 1]
-
-        return reqs, data, empty_parents, empty_children
-
-    def _extract_frs_lines(self, lines, reqs, data):
+    def _extract_frs_lines(self, lines, reqs):
         """ Extract the items from the list of lines, and place
         the resulting items into the reqs and data maps. 
         
         Scan line by line and store the state of the current item.
-        If a new line matches an FRS item, finish compiling the previous item
+        If a new line matches a req item, finish compiling the previous item
         and create a new one. If it does not, add the text to the current list of
         text lines belonging to the previous item. 
         
@@ -295,24 +268,116 @@ class RequirementExtracter():
             line = lines[i]
             result, type, num, text, cancel = self._get_result_for_line(line)
             if result == self._REQ_RESULT:
-                self._current_finish(current, current_text, reqs, data)
-                current = Requirement(type, num, cancel, (), "")
+                self._current_finish(current, current_text, reqs)
+                current = Reference(type, num, cancel, (), "")
                 current_text = [text]
             elif result == self._RAW_LINE:
                 self._current_append(current, current_text, text)
+            elif result == self._EMPTY_LINE:
+                self._current_finish(current, current_text, reqs)
+                current = current_text = None
             i += 1
-        self._current_finish(current, current_text, reqs, data)
+        self._current_finish(current, current_text, reqs)
         
+    def parse_into(self, reqs, text):
+        if isinstance(text, str):
+            text = text.splitlines()
+        self._extract_frs_lines(text, reqs)
+        
+    def parse_text(self, text):
+        reqs = []
+        self.parse_into(reqs, text)
+        return reqs
+    
+    def parse_all(self, issues):
+        reqs = []
+        for iss in issues:
+            self.parse_into(reqs, iss.description)
+        return reqs
+        
+        
+class RequirementExtracter():
+    
+    def __init__(self, req_types=tuple(_req_types), test_types=_test_types):
+        self._req_types = req_types
+        self._test_types = test_types
+        
+    def _create_empties(self):
+        """
+        Create and pre-populate empty containers for a new run. 
+        This function creates an dummy empty parent to act as
+        a parent for the first item in the _types list, which
+        simplifies other algorithms in this class. 
+
+        This trick doesn't work for children, because the dummy child would
+        always get pulled in by req.childify(). The dummy parent
+        does not appear because it is not added to either top-level
+        data structure. Note that this approach is incompatible with
+        the original Requirement class design which used a WeakSet
+        to contain parents, because this dummy parent would go out
+        of scope here and become lost, leading to difficult to diagnose
+        errors. 
+        """
+
+        reqs = {}
+        empty_parents = {}  # typ -> empty parent Requirement
+        empty_children = {} # typ -> empty child Requirement
+
+        # build lists of parents and children in multiple passes to simplify
+        # the algorithm
+
+        types = self._req_types + ['TEST']
+
+        parents = []
+        children = []
+        for typ in types:
+            rp = Reference(typ, _notag=True)
+            rc = Reference(typ, _notag=True)
+            parents.append(rp)
+            children.append(rc)
+
+        ll = len(types) - 1
+        for i, typ in enumerate(types):
+            # These get special key names so they can be 
+            # easily removed later
+            key = 'EMPTY_PARENT_' + typ
+            key2 = 'EMPTY_CHILD_' + typ
+            reqs[key] = parents[i]
+            reqs[key2] = children[i]
+
+            parents[i].text = key
+            children[i].text = key2
+
+            # These conditional blocks can be combined later.
+            # I left them separate here for logical clarity
+
+            # assign parent
+            if i < ll:
+                parents[i + 1].refs = {key}
+                children[i + 1].refs = {key2}
+
+            # empty parent map
+            if i > 0:
+                empty_parents[typ] = parents[i - 1]
+
+            # empty child map
+            if i < ll:
+                empty_children[typ] = children[i + 1]  
+
+        # all test types have the same dummy parent
+        for typ in self._test_types:
+            empty_parents[typ] = parents[-2]
+
+        return reqs, empty_parents, empty_children
+
+
     def _finish_set_parents(self, reqs, empty_parents):
         """
         Finish pass #1: Set parents based on references tagged in each individual item. 
         If no parent is found, add on the empty parent so that eventual calls to 
         req.childify() will auto-include empty cells for the parent. 
-        
-        This function doesn't skip the first item in the _types list, because a dummy
-        parent is included in the empty_parents list. 
         """
-        t0 = self._types[0]
+        t0 = self._req_types[0]
         for req in reqs.values():
             if not req.refs and req.type != t0:
                 _setparent(req, empty_parents[req.type])
@@ -320,7 +385,17 @@ class RequirementExtracter():
                 parent = reqs.get(ref)
                 if parent is None:
                     raise ValueError("Can't find item: '%s'"%ref)
-                _setparent(req, parent)
+                if req.type != 'TEST':
+                    _setparent(req, parent)
+                else:
+                    # gotta get fancy- a test referring to e.g. a ref at index
+                    # 1 requires blank items for all indices between 1 and n
+                    ii = self._req_types.index(parent.type)
+                    for i in range(ii+1, len(self._req_types)):
+                        p = Reference(self._req_types[i], _notag=True)
+                        _setparent(p, parent)
+                        parent = p
+                    _setparent(req, parent)
                 
     def _finish_set_empty_children(self, reqs, empty_children):
         """
@@ -331,10 +406,17 @@ class RequirementExtracter():
         Skip if the item's type is the last item in the types list,
         since the last item shouldn't have children. 
         """
-        last_item = self._types[-1]
         for req in reqs.values():
-            if not req.children and req.type != last_item:
+            if not req.children and req.type != 'TEST':
                 req.children.add(empty_children[req.type])
+                
+    def _fixify_tests(self, reqs):
+        tt = set(self._test_types)
+        for k, r in reqs.items():
+            if r.type in tt:
+                r = r.copy()
+                r.type = "TEST"
+                reqs[k] = r
                 
     def _do_childify(self, reqs):
         """ Get the list of requirement traces by calling
@@ -351,7 +433,7 @@ class RequirementExtracter():
         release if the developer is so inclined...
         """
         rows = []
-        t0 = self._types[0]
+        t0 = self._req_types[0]
         for it in reqs.values():
             if it.type == t0:
                 rows.extend(it.childify())
@@ -365,20 +447,17 @@ class RequirementExtracter():
         
         The sort key is a lambda that turns the dotted-number
         stored in the requirement object into a list of integers
-        that can be compared lexicographically. 
+        that can be compared lexigraphically. 
         
         "3.4.5" -> (3, 4, 5)
         
-        This is needed because comparing the strings lexicographically
+        This is needed because comparing the strings lexigraphically
         results in e.g. "3.10" is less than "3.2". 
         """
         if not rows:
             return
-
-        # This key is a somewhat hacky way of ensuring that empty cells 
-        # [""] are sorted to the bottom of the list. 
-        key = lambda s: [int(n or 0) for n in s.num.split(".")] if s.num else [9999999999999]
-        for i in range(len(self._types)):
+        key = lambda s: [int(n or 0) for n in s.num.split(".")]
+        for i in range(len(self._req_types)):
             partial_sort(rows, i, key=key)
             
     def _stringify_rows(self, rows):
@@ -393,12 +472,13 @@ class RequirementExtracter():
                 ret.append(r)
         return ret
     
-    def _extract_finish(self, reqs, data, empty_parents, empty_children):
+    def _extract_finish(self, reqs, empty_parents, empty_children):
         """ Common code required to finish the extraction process regardless
         of entry point. 
         
         Delegate all work to appropriate sub functions where necessary. 
         """
+        self._fixify_tests(reqs)
         self._finish_set_parents(reqs, empty_parents)
         self._finish_set_empty_children(reqs, empty_children)
         listified = self._do_childify(reqs)
@@ -411,28 +491,23 @@ class RequirementExtracter():
         
         return self._stringify_rows(listified)
         
-    def extract_text(self, text):
-        """ Extract all reference items from a single continguous block of 
-        text. Assumes text is properly formatted.
-        """
-        return self.extract_lines(text.splitlines())
-        
-    def extract_lines(self, lines):
-        """ Extract all reference items from a list of properly-formatted
-        lines. 
-        """
-        reqs, data, empty_parents, empty_children = self._create_empties()
-        self._extract_frs_lines(lines, reqs, data)
-        return self._extract_finish(reqs, data, empty_parents, empty_children)
-        
-    def extract_all(self, issues):
-        reqs, data, empty_parents, empty_children = self._create_empties()
-        for iss in issues:
-            lines = iss.description.splitlines()
-            self._extract_frs_lines(lines, reqs, data)
-        return self._extract_finish(reqs, data, empty_parents, empty_children)
+    def extract(self, reqs):
+        reqs = {r.tag: r for r in reqs}
+        r, p, c = self._create_empties()
+        reqs.update(r)
+        return self._extract_finish(reqs, p, c)
+    
 
-if __name__ == '__main__':
-    from _itie_test_data_raw import _test_data_raw
-    for row in RequirementExtracter(_req_types).extract_text(_test_data_raw):
-        print(repr(row))
+def rowify_issues(types, issues):
+    parser = IssuetrackerParser(types)
+    reqs = parser.parse_all(issues)
+    rex = RequirementExtracter(types)
+    rows = rex.extract(reqs)
+    return rows
+
+def rowify_text(types, text):
+    parser = IssuetrackerParser(types)
+    reqs = parser.parse_text(issues)
+    rex = RequirementExtracter(types)
+    rows = rex.extract(reqs)
+    return rows
