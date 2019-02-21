@@ -19,8 +19,6 @@ Agitation refers to the mixing of vessel contents using a vertical wheel impelle
 
 *+URS3646+* 
 * *+URS3646.1:+* The system will control agitation using automatic and manual control, and be able to turn agitation off. 
-** Point 1
-** Point 2
 * *+URS3646.2:+* Automatic control will use speed as a set point to control PV. 
 * *+URS3646.3:+* Manual control will provide a constant controller output regardless of PV. 
 * *+URS3646.4:+* The system will use appropriate constraints to coerce outputs within appropriate operating limits. 

@@ -2,6 +2,7 @@ import re
 
 class Reference():
     """ Mostly POD class designed to hold data related to a requirement
+    or test item. 
     """
     def __init__(self, typ, num="", obs=False, refs=(), text="", _notag=False):
         self.type = typ
@@ -24,6 +25,22 @@ class Reference():
         new.parents = self.parents.copy()
         new.children = self.children.copy()
         return new
+
+    def equals(self, other):
+        return self.type == other.type and \
+                self.num == other.num and \
+                self.obs == other.obs and \
+                self.text == other.text
+
+    def merged(self, other):
+        new = self.copy()
+        new.refs.update(other.refs)
+        new.parents.update(other.parents)
+        new.children.update(other.children)
+        return new
+
+    # __hash__ and __eq__ needed for dict storage and 
+    # sorting functionality
         
     def __hash__(self):
         """ Used when adding to the `parents` or `children` 
@@ -166,7 +183,16 @@ class IssuetrackerParser():
     
     def __init__(self, types=tuple(_req_types + _test_types)):
         self._req_item, self._req_match, self._item_match, self._ref_find = _make_regex_ctx(types)
-        self._bracket_find = re.compile(r"(.*?)\[(.*)\](.*)").findall
+
+        # 1) match anything that isn't left bracket, 
+        # 2) ignore left bracket
+        # 3) capture everything until right bracket,
+        # 4) then right bracket
+        # 5) then capture everything until left bracket
+        
+        # The first group captures nothing after the first set of brackets
+        # in a string, but this is fine. 
+        self._bracket_find = re.compile(r"([^\[]*)\[([^\]]*)\]([^\[]*)").findall
         self._types = types
         
     def get_types(self):
@@ -188,26 +214,41 @@ class IssuetrackerParser():
         refs = []; text = []
         if isinstance(lines, str): 
             lines = lines.split()
+        
         for line in lines:
             results = self._bracket_find(line)
+
+            # If no results are found, don't forget to add the line back
+            # as text! Otherwise, the line would be missing from output.
+            # If results, the whole line will be captured 
+            # correctly by the regex. 
+
             if not results:
                 text.append(line)
             else:
                 for before, bracket, after in results:
                     text.append(before)
                     typnums = self._ref_find(bracket)
+
+                    # False positive? Add the bracketed text back. 
                     if not typnums:
                         text.append("[")
                         text.append(bracket)
                         text.append("]")
                     else:
-                        for typ, num in self._ref_find(bracket):
+                        for typ, num in typnums:
                             num = _numfix(num)
                             refs.append((typ, num))
+
                     text.append(after)
+
             text.append("\n")
+
+        # In all code paths above, the last element in the list
+        # is a superfluous newline. 
         if text:
-            text.pop()  # last newline
+            text.pop()
+
         return refs, ''.join(text)
     
     def _get_result_for_line(self, line):
@@ -385,17 +426,35 @@ class RequirementExtracter():
                 parent = reqs.get(ref)
                 if parent is None:
                     raise ValueError("Can't find item: '%s'"%ref)
-                if req.type != 'TEST':
-                    _setparent(req, parent)
-                else:
-                    # gotta get fancy- a test referring to e.g. a ref at index
-                    # 1 requires blank items for all indices between 1 and n
-                    ii = self._req_types.index(parent.type)
-                    for i in range(ii+1, len(self._req_types)):
-                        p = Reference(self._req_types[i], _notag=True)
-                        _setparent(p, parent)
-                        parent = p
-                    _setparent(req, parent)
+
+                # This is some fancy code that adds blank intermediates
+                # between references that are not sequential. For example,
+                # for _req_types = [URS, FRS, SDS]:
+                # 
+                # if req.type == SDS and parent.type == SDS, create
+                # blank intermediate FRS
+                # 
+                # if req.type == BUG and parent.type == URS, create
+                # blank FRS and SDS.
+                # 
+                # If types are sequential (common case), the loop is a noop.
+                # Note that because the req.type value is only checked
+                # against the contents of the _req_types list, 
+                # any arbitrary reference type not contained 
+                # within that list will work properly. 
+                # 
+                # Also note that if req.type is earlier in the list
+                # than the parent, then weird stuff happens. 
+
+                ii = self._req_types.index(parent.type)
+                for i in range(ii+1, len(self._req_types)):
+                    typ = self._req_types[i]
+                    if typ == req.type:
+                        break
+                    p = Reference(typ, _notag=True)
+                    _setparent(p, parent)
+                    parent = p
+                _setparent(req, parent)
                 
     def _finish_set_empty_children(self, reqs, empty_children):
         """
