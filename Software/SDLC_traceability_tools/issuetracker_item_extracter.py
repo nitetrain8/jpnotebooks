@@ -550,8 +550,13 @@ class RequirementExtracter():
         
         return self._stringify_rows(listified)
         
-    def extract(self, reqs):
-        reqs = {r.tag: r for r in reqs}
+    def extract(self, lreqs):
+        reqs = {}
+        for r in lreqs:
+            other = reqs.get(r.tag)
+            if other is not None and not r.equals(other):
+                raise ValueError("Ambiguous duplicate requirement for '%s':\n'%s'\n'%s'"%(r.tag, r.text, other.text))
+            reqs[r.tag] = r
         r, p, c = self._create_empties()
         reqs.update(r)
         return self._extract_finish(reqs, p, c)
