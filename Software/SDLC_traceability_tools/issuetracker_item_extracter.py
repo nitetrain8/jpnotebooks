@@ -4,7 +4,7 @@ class Reference():
     """ Mostly POD class designed to hold data related to a requirement
     or test item. 
     """
-    def __init__(self, typ, num="", obs=False, refs=(), text="", _notag=False):
+    def __init__(self, typ, num="", obs=False, refs=(), text="", priority="", milestone="", *, _notag=False):
         self.type = typ
         self.num = num
         self.obs = obs
@@ -15,6 +15,8 @@ class Reference():
             self.tag = ""
         else:
             self.tag = self._tag
+        self.priority = priority
+        self.milestone = milestone
         
         self.parents = set()
         self.children = set()
@@ -266,11 +268,11 @@ class IssuetrackerParser():
         # if any idiot uses multiple dashes for dash1 and dash2 and somehow
         # does it in a way to pass this check, they can deal with the fallout
         
-        dash1, type, num, text, dash2 = m.groups()
+        dash1, typ, num, text, dash2 = m.groups()
         cancel = dash1 == dash2 and dash1 != ""
-        return self._REQ_RESULT, type, num, text, cancel
+        return self._REQ_RESULT, typ, num, text, cancel
     
-    def _current_finish(self, current, current_text, reqs):
+    def _current_finish(self, current, current_text, reqs, iss):
         """ Compile the stored state for the current item and add
         it to the `reqs` and `data` structures. 
         """
@@ -280,6 +282,8 @@ class IssuetrackerParser():
         refs = set("".join(r) for r in refs)
         current.text = text
         current.refs = refs
+        current.priority = iss.priority.name
+        current.milestone = iss.sprint_milestone.name
         reqs.append(current)
 
     def _current_append(self, current, current_text, text):
@@ -287,7 +291,7 @@ class IssuetrackerParser():
             return
         current_text.append(text)
         
-    def _extract_frs_lines(self, lines, reqs):
+    def _extract_frs_lines(self, lines, reqs, iss=None):
         """ Extract the items from the list of lines, and place
         the resulting items into the reqs and data maps. 
         
@@ -307,39 +311,43 @@ class IssuetrackerParser():
         current_text = None
         while i < ll:
             line = lines[i]
-            result, type, num, text, cancel = self._get_result_for_line(line)
+            result, typ, num, text, cancel = self._get_result_for_line(line)
             if result == self._REQ_RESULT:
-                self._current_finish(current, current_text, reqs)
-                current = Reference(type, num, cancel, (), "")
+                self._current_finish(current, current_text, reqs, iss)
+                current = Reference(typ, num, cancel, (), "")
                 current_text = [text]
             elif result == self._RAW_LINE:
                 self._current_append(current, current_text, text)
             elif result == self._EMPTY_LINE:
-                self._current_finish(current, current_text, reqs)
+                self._current_finish(current, current_text, reqs, iss)
                 current = current_text = None
             i += 1
-        self._current_finish(current, current_text, reqs)
+        self._current_finish(current, current_text, reqs, iss)
         
-    def parse_into(self, reqs, text):
+    def parse_into(self, reqs, text, iss=None):
         if isinstance(text, str):
             text = text.splitlines()
-        self._extract_frs_lines(text, reqs)
+        self._extract_frs_lines(text, reqs, iss)
         
-    def parse_text(self, text):
+    def parse_text(self, text, iss=None):
         reqs = []
-        self.parse_into(reqs, text)
+        self.parse_into(reqs, text, iss)
         return reqs
+
+    def parse(self, iss):
+        return self.parse_text(iss.description, iss)
     
     def parse_all(self, issues):
         reqs = []
         for iss in issues:
-            self.parse_into(reqs, iss.description)
+            new = self.parse(iss)
+            reqs.extend(new)
         return reqs
         
         
 class RequirementExtracter():
     
-    def __init__(self, req_types=tuple(_req_types), test_types=_test_types):
+    def __init__(self, req_types=tuple(_req_types), test_types=tuple(_test_types)):
         self._req_types = req_types
         self._test_types = test_types
         
@@ -425,13 +433,13 @@ class RequirementExtracter():
             for ref in req.refs:
                 parent = reqs.get(ref)
                 if parent is None:
-                    raise ValueError("Can't find item: '%s'"%ref)
+                    raise ValueError("Can't find item '%s' referenced by '%s'"%(ref, req.tag))
 
                 # This is some fancy code that adds blank intermediates
                 # between references that are not sequential. For example,
                 # for _req_types = [URS, FRS, SDS]:
                 # 
-                # if req.type == SDS and parent.type == SDS, create
+                # if req.type == SDS and parent.type == URSS, create
                 # blank intermediate FRS
                 # 
                 # if req.type == BUG and parent.type == URS, create
@@ -515,7 +523,7 @@ class RequirementExtracter():
         """
         if not rows:
             return
-        key = lambda s: [int(n or 0) for n in s.num.split(".")]
+        key = lambda s: [int(n or 0) if s.num else 1<<31 for n in s.num.split(".") ]
         for i in range(len(self._req_types)):
             partial_sort(rows, i, key=key)
             
@@ -524,7 +532,7 @@ class RequirementExtracter():
         Filter out blank rows by verifying that each row has at 
         least one non-empty string. 
         """
-        ret = []
+        ret = [self._req_types + ["Validation"]]
         for row in rows:
             r = [r.tag for r in row]
             if any(r):
@@ -553,6 +561,8 @@ class RequirementExtracter():
     def extract(self, lreqs):
         reqs = {}
         for r in lreqs:
+            if r.obs:
+                continue  # skip obsolete issues
             other = reqs.get(r.tag)
             if other is not None and not r.equals(other):
                 raise ValueError("Ambiguous duplicate requirement for '%s':\n'%s'\n'%s'"%(r.tag, r.text, other.text))
@@ -571,7 +581,7 @@ def rowify_issues(types, issues):
 
 def rowify_text(types, text):
     parser = IssuetrackerParser(types)
-    reqs = parser.parse_text(issues)
+    reqs = parser.parse_text(text)
     rex = RequirementExtracter(types)
     rows = rex.extract(reqs)
     return rows
