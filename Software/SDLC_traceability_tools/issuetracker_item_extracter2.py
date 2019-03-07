@@ -469,6 +469,20 @@ class RequirementExtracter():
                     p = c
                 _setparent(Reference('TEST', _notag=True), p)
                 
+    def _add_empty_children(self, req, p0):
+        typs = iter(self._req_types)
+        next(typs)  # skip p0
+        parent = p0
+        while True:
+            typ = next(typs, 'TEST')
+            if typ == req.type or typ == 'TEST':  # check against 'TEST' just in case
+                _setparent(req, parent)
+                break
+            else:
+                c = Reference(typ, _notag=True)
+                _setparent(c, parent)
+                parent = c
+
     def _finish_set_parents(self, reqs):
         """
         Finish pass #1: Set parents based on references tagged in each individual item. 
@@ -485,22 +499,13 @@ class RequirementExtracter():
         t0 = self._req_types[0]
         empty_p0 = Reference(t0, _notag=True)
         reqs['EMPTY_PARENT'] = empty_p0
+        tmap = {typ: i for i, typ in enumerate(self._req_types)}
 
         for req in reqs.values():
             if not req.refs and req.type != t0:
-                typs = iter(self._req_types)
-                next(typs)  # skip p0
-                parent = empty_p0
-                while True:
-                    typ = next(typs, 'TEST')
-                    if typ == req.type or typ == 'TEST':  # check against 'TEST' just in case
-                        _setparent(req, parent)
-                        break
-                    else:
-                        c = Reference(typ, _notag=True)
-                        _setparent(c, parent)
-                        parent = c
-                    
+                self._add_empty_children(req, empty_p0)
+            
+            # else
             for ref in req.refs:
                 parent = reqs.get(ref)
                 if parent is None:
@@ -517,15 +522,32 @@ class RequirementExtracter():
                     else:
                         raise ValueError("Can't find item '%s' referenced by '%s'"%(ref, req.tag))
 
-                ii = self._req_types.index(parent.type)
-                for i in range(ii+1, len(self._req_types)):
-                    typ = self._req_types[i]
-                    if typ == req.type:
-                        break
-                    p = Reference(typ, _notag=True)
-                    _setparent(p, parent)
-                    parent = p
-                _setparent(req, parent)
+                self._add_intermediates(req, parent, tmap)
+
+    def _add_intermediates(self, req, parent, tmap):
+        """ 
+        This is where the magic happens to transform references
+        into edges in the tree graph. The rules here determine
+        how to interpret each reference. Here, a simple hierarchy
+        is built using the order of items in self._req_types. 
+        If a reference is made to an item on the same level or 
+        lower in the hierarchy, then the reference is ignored. 
+
+        This allows the resulting tree graph to avoid cycles
+        and be directly translateable into the row-based output
+        required for the trace matrix. 
+        """
+        ri = tmap[req.type]
+        pi = tmap[parent.type]
+        if pi < ri:
+            for i in range(pi+1, len(self._req_types)):
+                typ = self._req_types[i]
+                if i == ri:
+                    break
+                p = Reference(typ, _notag=True)
+                _setparent(p, parent)
+                parent = p
+            _setparent(req, parent)
                 
 
 def find_missing_references(reqs):
