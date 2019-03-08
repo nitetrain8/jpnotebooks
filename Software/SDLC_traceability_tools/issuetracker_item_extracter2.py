@@ -267,6 +267,7 @@ class IssuetrackerParser():
         current.refs = refs
         current.priority = iss.priority.name
         current.milestone = iss.sprint_milestone.name
+        current.source = iss
         reqs.append(current)
 
     def _current_append(self, current, current_text, text):
@@ -537,8 +538,9 @@ class RequirementExtracter():
         and be directly translateable into the row-based output
         required for the trace matrix. 
         """
-        ri = tmap[req.type]
-        pi = tmap[parent.type]
+        mt = len(self._req_types)
+        ri = tmap.get(req.type, mt)
+        pi = tmap.get(parent.type, mt)
         if pi < ri:
             for i in range(pi+1, len(self._req_types)):
                 typ = self._req_types[i]
