@@ -1,4 +1,4 @@
-import re
+import re, types
 
 class Reference():
     """ Mostly POD class designed to hold data related to a requirement
@@ -510,7 +510,12 @@ class RequirementExtracter():
             for ref in req.refs:
                 parent = reqs.get(ref)
                 if parent is None:
-                    if self.config.missing_parents == 'fix':
+                    if isinstance(self.config.missing_parents, types.FunctionType):
+                        action = self.config.missing_parents(req, ref, reqs)
+                    else:
+                        action = self.config.missing_parents
+                    
+                    if action == 'fix':
                         m = self._item_matcher(ref)
                         if not m:
                             raise ValueError("Failed to extract reference when correcting missing parent '%s' for item '%s'"%(ref, req.tag))
@@ -518,10 +523,12 @@ class RequirementExtracter():
                         parent = Reference(t, n, text="missing parent")
                         if self.config.verbose:
                             print("Warning: creating reference for missing parent '%s' for '%s'"%(ref, req.tag))
-                    elif self.config.missing_parents == 'ignore':
+                    elif action == 'ignore':
                         continue
-                    else:
+                    elif action == 'raise':
                         raise ValueError("Can't find item '%s' referenced by '%s'"%(ref, req.tag))
+                    else:
+                        raise ValueError("Invalid action '%s' returned by custom error handler" % action)
 
                 self._add_intermediates(req, parent, tmap)
 
