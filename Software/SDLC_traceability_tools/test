@@ -1,0 +1,159 @@
+*+Functional Requirements+*
+* *FRS4400.1* Pumps&ValvesMediaHardware [URS4400.1, URS3664.3, URS3664.4]
+** Group: Pumps and Valves
+** Data type: Cluster
+** Control or Indicator: Control
+** Function: Contains information about the Media pump hardware
+** *FRS4400.1.1* Exists [URS4400.1, URS3664.3, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show the control for the pump; show if True, hide if False. Server and RIO will reject calls to modify the pump speed or direction if the pump does not exist.
+** *FRS4400.1.2* SpeedControl [URS4400.1, URS3664.3, URS3664.4]
+*** Data type: Enum. 0 = On/Off, 1 = Slow/Med/Fast, 2 = RPM control, 500 User Max, 600 Physical Max
+*** Function: Plan for future is to:
+#### Tell Hello UI how to display speed control for the pump: 0 = none, 1 = Slow/Medium/Fast, 2 = RPM (500 max)
+#### Use this value, instead of Bioreactor Model, to determine what the User Event recorded to the database says
+** *FRS4400.1.3* Reversible [URS4400.1, URS3664.3, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show 'CCW/CW' toggle for the pump; show if True, hide if False.
+** *FRS4400.1.4* AllowAsBase [URS4400.1, URS3664.3, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show the pump as an option for Base pump; show if True, hide if False. Server and RIO will also reject requests to set that pump to Base pump if this value is False.
+* *FRS4400.2* Pumps&ValvesAdditionAHardware [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+** Group: Pumps and Valves
+** Data type: Cluster
+** Control or Indicator: Control
+** Function: Contains information about the Addition A pump hardware
+** *FRS4400.2.1* Exists [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show the control for the pump; show if True, hide if False. Server and RIO will reject calls to modify the pump speed or direction if the pump does not exist.
+** *FRS4400.2.2* SpeedControl [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Enum. 0 = On/Off, 1 = Slow/Med/Fast, 2 = RPM control, 500 User Max, 600 Physical Max
+*** Function - Intermediate plan:
+#### If this pump is configured as 0 or 1, set the Duty as the user-selected speed, where Off is 0, Fast is 100%, and Slow and Medium correspond to PumpLowAuxSpeed and PumpMedAuxSpeed. Don't set the output Voltage.
+#### If this pump is configured as 2, and the model is a PBS 500, set the output Voltage based on the user-set RPM, and set the Duty to 100%.
+#### If this pump is configured as 2, and the model is NOT a PBS 500:
+##### Read the user-set speed (slow/med/fast) and convert to an RPM (issue #4422)
+##### Set the output Voltage based on that calculated RPM, and set the Duty to 100%
+*** Function - Future plan:
+#### Tell Hello UI how to display speed control for the pump: 0 = none, 1 = Slow/Medium/Fast, 2 = RPM (500 max)
+#### Use this value, instead of Bioreactor Model, to determine what the User Event recorded to the database says
+#### If this pump is configured as 0 or 1, set the Duty as the user-selected speed, where Off is 0, Fast is 100%, and Slow and Medium correspond to PumpLowAuxSpeed and PumpMedAuxSpeed. Don't set the output Voltage.
+#### If this pump is configured as 2, set the output Voltage based on the user-set RPM, and set the Duty to 100%.
+** *FRS4400.2.3* Reversible [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show 'CCW/CW' toggle for the pump; show if True, hide if False.
+** *FRS4400.2.4* AllowAsBase [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Boolean
+*** Function - Intermediate plan: Server and RIO will reject requests to set that pump to Base pump if this value is False.
+*** Function - Future plan: tell Hello UI whether to show the pump as an option for Base pump; show if True, hide if False.
+* *FRS4400.3* Pumps&ValvesAdditionBHardware [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+** Group: Pumps and Valves
+** Data type: Cluster
+** Control or Indicator: Control
+** Function: Contains information about the Addition B pump hardware
+** *FRS4400.3.1* Exists [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show the control for the pump; show if True, hide if False. Server and RIO will reject calls to modify the pump speed or direction if the pump does not exist.
+** *FRS4400.3.2* SpeedControl [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Enum. 0 = On/Off, 1 = Slow/Med/Fast, 2 = RPM control, 500 User Max, 600 Physical Max
+*** Function - Intermediate plan:
+#### If this pump is configured as 0 or 1, set the Duty as the user-selected speed, where Off is 0, Fast is 100%, and Slow and Medium correspond to PumpLowAuxSpeed and PumpMedAuxSpeed. Don't set the output Voltage.
+#### If this pump is configured as 2, and the model is a PBS 500, set the output Voltage based on the user-set RPM, and set the Duty to 100%.
+#### If this pump is configured as 2, and the model is NOT a PBS 500:
+##### Read the user-set speed (slow/med/fast) and convert to an RPM (issue #4422)
+##### Set the output Voltage based on that calculated RPM, and set the Duty to 100%
+*** Function - Future plan:
+#### Tell Hello UI how to display speed control for the pump: 0 = none, 1 = Slow/Medium/Fast, 2 = RPM (500 max)
+#### Use this value, instead of Bioreactor Model, to determine what the User Event recorded to the database says
+#### If this pump is configured as 0 or 1, set the Duty as the user-selected speed, where Off is 0, Fast is 100%, and Slow and Medium correspond to PumpLowAuxSpeed and PumpMedAuxSpeed. Don't set the output Voltage.
+#### If this pump is configured as 2, set the output Voltage based on the user-set RPM, and set the Duty to 100%.
+** *FRS4400.3.3* Reversible [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show 'CCW/CW' toggle for the pump; show if True, hide if False.
+** *FRS4400.3.4* AllowAsBase [URS4400.1, URS3664.1, URS3664.2, URS3664.4]
+*** Data type: Boolean
+*** Function - Intermediate plan: Server and RIO will reject requests to set that pump to Base pump if this value is False.
+*** Function - Future plan: tell Hello UI whether to show the pump as an option for Base pump; show if True, hide if False.
+* *FRS4400.4* Pumps&ValvesSampleHardware [URS3664.4, URS3664.6]
+** Group: Pumps and Valves
+** Data type: Cluster
+** Control or Indicator: Control
+** Function: Contains information about the Sample pump hardware
+** *FRS4400.4.1* Exists [URS3664.4, URS3664.6]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show the control for the pump; show if True, hide if False. Server and RIO will reject calls to modify the pump speed or direction if the pump does not exist.
+** *FRS4400.4.2* SpeedControl [URS3664.4, URS3664.6]
+*** Data type: Enum. 0 = On/Off, 1 = Slow/Med/Fast, 2 = RPM control, 500 User Max, 600 Physical Max
+*** Function: Plan for future is to:
+#### Tell Hello UI how to display speed control for the pump: 0 = none, 1 = Slow/Medium/Fast, 2 = RPM (500 max)
+#### Use this value, instead of Bioreactor Model, to determine what the User Event recorded to the database says
+** *FRS4400.4.3* Reversible [URS3664.4, URS3664.6]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show 'CCW/CW' toggle for the pump; show if True, hide if False.
+** *FRS4400.4.4* AllowAsBase [URS3664.4, URS3664.6]
+*** Data type: Boolean
+*** Function: Plan for future is to tell Hello UI whether to show the pump as an option for Base pump; show if True, hide if False. Server and RIO will also reject requests to set that pump to Base pump if this value is False.
+
+
+*+Release Notes+*
+* User Manuals:
+** The following global variables have been introduced, and should be included in the "Pumps and Valves" group of Appendix 4:
+|_. Variable Name |_. Default Deadband |_. Default Record |_. Source |_. Definition |
+| Pumps&ValvesMediaHardware.Exists | 0.5 | No | System | Configured to be True when the bioreactor hardware has a Media Pump. Default is True for all PBS bioreactors. |
+| Pumps&ValvesMediaHardware.SpeedControl | 0.5 | No | System | The method of speed control for the Media Pump supported by the bioreactor hardware. 0 means Off/On, 1 means Slow/Medium/Fast, 2 means RPM control. Default is 0 for PBS 3 bioreactors, and 2 for all other models. |
+| Pumps&ValvesMediaHardware.Reversible | 0.5 | No | System | Configured to be True when the bioreactor hardware supports bi-directional flow for the Media Pump. Default is False for all PBS bioreactors. |
+| Pumps&ValvesMediaHardware.AllowAsBase | 0.5 | No | System | Configured to be True when the bioreactor hardware supports using the Media Pump as the Base pump. Default is False for all PBS bioreactors. |
+| Pumps&ValvesAdditionAHardware.Exists | 0.5 | No | System | Configured to be True when the bioreactor hardware has an Addition Pump A. Default is True for all PBS bioreactors. |
+| Pumps&ValvesAdditionAHardware.SpeedControl | 0.5 | No | System | The method of speed control for the Addition Pump A supported by the bioreactor hardware. 0 means Off/On, 1 means Slow/Medium/Fast, 2 means RPM control. Default is 1 for PBS 3 and PBS 15 bioreactors, and 2 for PBS 80 bioreactors. Note however that for PBS 80 bioreactors the Hello UI still displays the speed control options as Slow Medium and Fast. |
+| Pumps&ValvesAdditionAHardware.Reversible | 0.5 | No | System | Configured to be True when the bioreactor hardware supports bi-directional flow for the Addition Pump A. Default is False for all PBS bioreactors. |
+| Pumps&ValvesAdditionAHardware.AllowAsBase | 0.5 | No | System | Configured to be True when the bioreactor hardware supports using the Addition Pump A as the Base pump. Default is True for all PBS bioreactors with the small Addition Pump A, and False if the pump is the large RPM-controlled type (i.e. the PBS 80 MAG). |
+| Pumps&ValvesAdditionBHardware.Exists | 0.5 | No | System | Configured to be True when the bioreactor hardware has an Addition Pump B. Default is True for all PBS bioreactors. |
+| Pumps&ValvesAdditionBHardware.SpeedControl | 0.5 | No | System | The method of speed control for the Addition Pump B supported by the bioreactor hardware. 0 means Off/On, 1 means Slow/Medium/Fast, 2 means RPM control. Default is 1 for all PBS bioreactors. |
+| Pumps&ValvesAdditionBHardware.Reversible | 0.5 | No | System | Configured to be True when the bioreactor hardware supports bi-directional flow for the Addition Pump B. Default is False for all PBS bioreactors. |
+| Pumps&ValvesAdditionBHardware.AllowAsBase | 0.5 | No | System | Configured to be True when the bioreactor hardware supports using the Addition Pump B as the Base pump. Default is True for all PBS bioreactors. |
+| Pumps&ValvesSampleHardware.Exists | 0.5 | No | System | Configured to be True when the bioreactor hardware has a Sample Pump. Default is True for all PBS bioreactors. |
+| Pumps&ValvesSampleHardware.SpeedControl | 0.5 | No | System | The method of speed control for the Sample Pump supported by the bioreactor hardware. 0 means Off/On, 1 means Slow/Medium/Fast, 2 means RPM control. Default is 0 for all PBS bioreactors. |
+| Pumps&ValvesSampleHardware.Reversible | 0.5 | No | System | Configured to be True when the bioreactor hardware supports bi-directional flow for the Sample Pump. Default is True for all PBS bioreactors. |
+| Pumps&ValvesSampleHardware.AllowAsBase | 0.5 | No | System | Configured to be True when the bioreactor hardware supports using the Sample Pump as the Base pump. Default is False for all PBS bioreactors. |
+
+
+*+Tests+*
+# Data Logging
+** Purpose: Confirm the new globals are recorded via logger settings as expected
+** Starting point: A dev control stack has a 3.0.8 release candidate installed on both RIO and Windows. It has the correct logger settings and bioreactor configuration file formats
+** Steps:
+### Note the contents of the Bioreactor Configuration.json file loaded on the RIO, and the current time
+### Configure a Logger settings file to only record the new globals
+### Make the logger settings file active
+### Start a new batch
+### Change the contents of the file, and note them, and the current time
+### Reboot the RIO
+### Repeat the 'change/reboot' steps so at least 4 versions of the file are tested
+### Generate a process data report for the batch
+** Acceptance criteria: All the variables are recorded. For each time a batch was started or the RIO was rebooted, a data point for each variable was recorded. The data points all match the file.
+# Recipe Creation (may need to be different, depending on if #4423 is implemented)
+** Purpose: Confirm creating a recipe involving Enums within a cluster works
+** Starting point: Recipe Editor
+** Steps:
+### Make a new recipe
+### Make the first step 'Set Pumps&ValvesMediaHardware.SpeedControl to Slow/Med/Fast'
+### Make the second step 'Wait until Pumps&ValvesSampleHardware.SpeedControl = Slow/Med/Fast'
+### Save the recipe
+** Acceptance criteria: All steps are able to be performed, with no errors or unintended results.
+# Recipe Running (may need to be different, depending on if #4423 is implemented)
+** Purpose: Confirm running a recipe involving Enums within a cluster works
+** Starting point: Hello UI. Previous test has been performed. Pumps&ValvesSampleHardware.SpeedControl is 0 (Off/On)
+** Steps:
+### Navigate to the Auto Pilot menu
+### Start the recipe created in the previous test
+### After 30 seconds or more, stop the recipe
+** Acceptance criteria: The first step of the recipe runs, and the second one does not; the recipe stays on that "Wait Until" step until the operator stops the recipe.
+
+
+Questions:
+# Should the Recipe Editor be modified to only allow 'Set' steps for globals that are Controls (i.e. the ones recorded to Global Variables I.conf etc.), or written to by Cal Factors.cfg or System Variables.sys? The 'Add Line' button could just be grayed out if the selected step type is 'Set' and the global doesn't match the above criteria. If we implement this, should we also enforce it on the RIO, rejecting steps involving 'forbidden' globals?
+# Will it be a problem in recipes or data logging that we're putting enums inside clusters? Will require testing:
+## Data Logging
+## Recipe Creation
+## Recipe Running
+
