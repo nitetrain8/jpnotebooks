@@ -38,7 +38,7 @@ class UserTestsParser():
             tid = str(gh("ID_TEST", row))
             if tid.endswith(".0"):
                 tid = tid[:-2]
-            req = Reference("USR", tid, False, refs, gh("Test Name", row))
+            req = Reference("TEST", tid, False, refs, gh("Test Name", row))
             reqs.append(req)
         return reqs
         

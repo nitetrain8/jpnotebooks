@@ -1,4 +1,6 @@
 import re, types
+import collections
+
 
 class Reference():
     """ Mostly POD class designed to hold data related to a requirement
@@ -10,11 +12,11 @@ class Reference():
         self.obs = obs
         self.refs = set(refs)
         self.text = text
-        self._tag = typ + num
+        self.rawtag = typ + num
         if _notag:
             self.tag = ""
         else:
-            self.tag = self._tag
+            self.tag = self.rawtag
         self.priority = priority
         self.milestone = milestone
         
@@ -129,13 +131,14 @@ _req_types = [
 _test_types = [
     'UNIT',
     'USER',
-    'BETA'
+    'BETA',
+    'TEST'
 ]
 
 __item_template = r"(%s)([\d\.]+)"
 
-def create_item_matcher(types):
-    return re.compile(__item_template % "|".join(types)).match
+def create_item_matcher(thetypes):
+    return re.compile(__item_template % "|".join(thetypes)).match
 
 def _make_regex_ctx(_types):
     """ Create regex specific to the given list of traceable tags """
@@ -166,8 +169,8 @@ class IssuetrackerParser():
     _RAW_LINE   = 1
     _REQ_RESULT = 2
     
-    def __init__(self, types=tuple(_req_types + _test_types)):
-        self._req_item, self._req_match, self._item_match, self._ref_find = _make_regex_ctx(types)
+    def __init__(self, thetypes=tuple(_req_types + _test_types)):
+        self._req_item, self._req_match, self._item_match, self._ref_find = _make_regex_ctx(thetypes)
 
         # 1) match anything that isn't left bracket, 
         # 2) ignore left bracket
@@ -178,7 +181,7 @@ class IssuetrackerParser():
         # The first group captures nothing after the first set of brackets
         # in a string, but this is fine. 
         self._bracket_find = re.compile(r"([^\[]*)\[([^\]]*)\]([^\[]*)").findall
-        self._types = types
+        self._types = thetypes
         
     def get_types(self):
         return self._types
@@ -271,9 +274,8 @@ class IssuetrackerParser():
         reqs.append(current)
 
     def _current_append(self, current, current_text, text):
-        if current is None:
-            return
-        current_text.append(text)
+        if current is not None:
+            current_text.append(text)
         
     def _extract_frs_lines(self, lines, reqs, iss=None):
         """ Extract the items from the list of lines, and place
@@ -330,9 +332,10 @@ class IssuetrackerParser():
         
 
 class REConfig():
-    def __init__(self, missing_parents='raise', verbose=True):
+    def __init__(self, missing_parents='raise', obsolete='ignore', verbose=True):
         self.missing_parents = missing_parents
         self.verbose = verbose
+        self.obsolete = obsolete
 
 _RE_DEFAULT_CONFIG = REConfig()
 
@@ -423,9 +426,11 @@ class RequirementExtracter():
     
     def extract(self, lreqs):
         reqs = {}
+        obsolete = collections.defaultdict(list)
         for r in lreqs:
             if r.obs:
-                continue  # skip obsolete issues
+                obsolete[r.tag].append(r)
+                continue
             other = reqs.get(r.tag)
             if other is not None and not r.equals(other):
                 raise ValueError("Ambiguous duplicate requirement for '%s':\n'%s'\n'%s'"%(r.tag, r.text, other.text))
@@ -443,7 +448,7 @@ class RequirementExtracter():
         self._finish_set_empty_children(reqs)
         listified = self._do_childify(reqs)
         self._multisort_req_list(listified)
-        self._r = reqs
+
         # release references to allow GC to collect all objects
         # once `reqs` and `data` go out of scope. 
         # for v in reqs.values():
@@ -514,7 +519,7 @@ class RequirementExtracter():
                         action = self.config.missing_parents(req, ref, reqs)
                     else:
                         action = self.config.missing_parents
-                    
+
                     if action == 'fix':
                         m = self._item_matcher(ref)
                         if not m:
