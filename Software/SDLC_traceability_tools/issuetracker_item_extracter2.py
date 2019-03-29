@@ -593,3 +593,31 @@ def rowify_text(types, text):
     rex = RequirementExtracter(types)
     rows = rex.extract(reqs)
     return rows
+
+
+class WebFRSIssuetrackerParser(IssuetrackerParser):
+    def __init__(self, types=("URS", "FRS", "SDS", "SWDS")):
+        types = list(types)
+        types.append("3.0WebFRS")
+        super().__init__(types)
+        
+    def _get_result_for_line(self, line):
+        """ identical to parent function, but checks the type after
+        scanning the line to return only 3.0WebFRS items, converted
+        to plain FRS items. 
+        """
+        if not line or line.isspace():
+            return self._EMPTY_LINE, None, None, None, True
+
+        m = self._item_match(line)
+        if m is None: 
+            return self._RAW_LINE, "", "", line.strip(), False
+        
+        dash1, typ, num, text, dash2 = m.groups()
+        if typ != '3.0WebFRS':
+            return self._EMPTY_LINE, None, None, None, True
+        else:
+            typ = 'FRS'
+            num = "3." + num
+        cancel = dash1 == dash2 and dash1 != ""
+        return self._REQ_RESULT, typ, num, text, cancel
