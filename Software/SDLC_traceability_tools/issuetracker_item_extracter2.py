@@ -201,7 +201,7 @@ class IssuetrackerParser():
         """
         refs = []; text = []
         if isinstance(lines, str): 
-            lines = lines.split()
+            lines = lines.splitlines()
         
         for line in lines:
             results = self._bracket_find(line)
@@ -255,7 +255,7 @@ class IssuetrackerParser():
         # does it in a way to pass this check, they can deal with the fallout
         
         dash1, typ, num, text, dash2 = m.groups()
-        cancel = dash1 == dash2 and dash1 != ""
+        cancel = dash1 != ""  # don't require dash2
         return self._REQ_RESULT, typ, num, text, cancel
     
     def _current_finish(self, current, current_text, reqs, iss):
